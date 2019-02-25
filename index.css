@@ -1,3 +1,15 @@
-.body {
+.header.item{
+    font-size: 120%;
+}
+
+.ui.header {
     margin: 20px;
+}
+
+.ui.link.cards {
+    margin: 20px;
+}
+
+.ui.modal {
+    font-size: 150%;
 }
