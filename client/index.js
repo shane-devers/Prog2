@@ -1,5 +1,3 @@
-$(document).ready(function(){document.getElementById('Choc').addEventListener('click', function(){console.log("Bla"); $('#modal').modal('show');})})
-
 document.addEventListener('DOMContentLoaded', async function(event){
     let response = await fetch('http://127.0.0.1:8090/recipes');
     let body = await response.text();
