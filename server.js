@@ -1,6 +1,11 @@
-var express = require('express')
-var app = express()
+var express = require('express');
+var app = express();
+var recipes = require('./recipes.json');
 
-app.use(express.static('client'))
+app.use(express.static('client'));
 
-app.listen(8090)
+app.get('/recipes', function(req, resp){
+    resp.send(recipes);
+});
+
+app.listen(8090);
