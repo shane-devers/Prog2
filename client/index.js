@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async function(event){
     for (let i = 0; i < recipes.length; i++) {
         document.getElementById('recipes').innerHTML += '<div class="card" id="' + recipes[i].title + '"><div class="image"><img src=' + recipes[i].thumbnail + '></div><div class="content"><div class="header">' + recipes[i].title + '</div><div class="description">' + recipes[i].description + '</div></div><div class="extra content"><span class="right floated">' + recipes[i].date + '</span><span><i class="user icon"></i>' + recipes[i].creator + '</span></div></div>';
         document.getElementById('modals').innerHTML += '<div class="ui modal" id="modal'+i+'"><div class="header">'+recipes[i].title+'</div><img class="ui fluid image" src="'+recipes[i].thumbnail+'"><div class="scrolling content" id="scroll'+ i+'">';
-        scroll = '<p><strong>Ingredients:</strong><br><ul>';
+        let scroll = '<p><strong>Ingredients:</strong><br><ul>';
         for (let j = 0; j < recipes[i].ingredients.length; j++) {
             scroll += '<li>' + recipes[i].ingredients[j] + '<br></li>';
         }
@@ -13,4 +13,5 @@ document.addEventListener('DOMContentLoaded', async function(event){
         document.getElementById('scroll'+i).innerHTML = scroll;
         $(document).ready(function(){document.getElementById(recipes[i].title).addEventListener('click', function(){$('#modal' + i).modal('show');})})
     }
+    $(document).ready(function(){document.getElementById('NewBtn').addEventListener('click', function(){$('#newRecipe').modal('show');})})
 })

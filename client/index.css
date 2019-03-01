@@ -13,3 +13,7 @@
 .ui.modal {
     font-size: 150%;
 }
+
+.ui.primary.button{
+    margin: 20px;
+}
