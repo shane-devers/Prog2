@@ -30,8 +30,20 @@ app.post('/new', function(req, resp){
     }
     newRecipe.ingredients = newIngredientList;
     newRecipe.thumbnail = req.body.RecipeThumbnail;
-    recipes.push(newRecipe);
-    resp.send(newRecipe);
+    let complete = true;
+    for (const property in newRecipe) {
+        if (newRecipe.hasOwnProperty(property)) {
+            if (newRecipe[property] == "") {
+                complete = false;
+            }
+        }
+    }
+    if (complete) {
+        recipes.push(newRecipe);
+        resp.send(newRecipe);
+    } else {
+        resp.send("Please complete all fields");
+    }
 });
 
 app.listen(8090);
