@@ -11,6 +11,7 @@ app.get('/recipes', function(req, resp){
 });
 
 app.post('/new', function(req, resp){
+    /*
     let newRecipe = {};
     let today = new Date();
     let m = today.getMonth();
@@ -43,7 +44,19 @@ app.post('/new', function(req, resp){
         resp.send(newRecipe);
     } else {
         resp.send("Please complete all fields");
-    }
+    } 
+    */
+    console.log(req.body);
+    let newRecipe = {
+        "date" : req.body.date,
+        "creator" : req.body.creator,
+        "title" : req.body.title,
+        "description" : req.body.description,
+        "ingredients" : req.body.ingredients,
+        "thumbnail" : req.body.thumbnail
+    };
+    recipes.push(newRecipe);
+    resp.send("Recipe successfully added");
 });
 
 app.listen(8090);

@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async function(event){
         //document.getElementById('scroll'+i).innerHTML = scroll;
         //$(document).ready(function(){document.getElementById(recipes[i].title).addEventListener('click', function(){$('#modal' + i).modal('show');})})
     //}
-    //$(document).ready(function(){document.getElementById('NewBtn').addEventListener('click', function(){$('#newRecipe').modal('show');})})
+    $(document).ready(function(){document.getElementById('NewBtn').addEventListener('click', function(){$('#newRecipe').modal('show');})})
 });
 
 $(document).ready(function(){document.getElementById('search').addEventListener('input', async function(event){
@@ -66,3 +66,50 @@ async function getResults(event) {
         }
     }
 }
+
+$(document).ready(function(){document.getElementById('addRecipe').addEventListener('submit', async function(event){
+    event.preventDefault();
+    try {
+        let newRecipe = {};
+        let today = new Date();
+        let m = today.getMonth();
+        let months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+        let month = months[m];
+        let day = today.getDate();
+        let year = today.getFullYear();
+        let date = day + " " + month + " " + year;
+        let creator = "baker213";
+        let title = document.getElementById('RecipeTitle').value;
+        let description = document.getElementById('RecipeDescription').value;
+        let ingredients = document.getElementById('RecipeIngredients').value;
+        let ingredientList = ingredients.split("\n");
+        let newIngredientList = [];
+        for (let i = 0; i < ingredientList.length; i++) {
+            newIngredientList.push(ingredientList[i]);
+        }
+        let thumbnail = document.getElementById('RecipeThumbnail').value;
+        let response = await fetch('http://127.0.0.1:8090/new', 
+                                    {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type": "application/x-www-form-urlencoded"
+                                        },
+                                        /*
+                                        body: {"date": date,
+                                            "creator": creator,
+                                            "title": title,
+                                            "description": description,
+                                            "ingredients": newIngredientList,
+                                            "thumbnail": thumbnail
+                                        }
+                                        */
+                                        body: "date=" + date + "&creator=" + creator + "&title=" + title + "&description=" + description + "&ingredients=[" + newIngredientList + "]&thumbnail=" + thumbnail
+                                    });
+        console.log(newIngredientList);
+        if (!response.ok) {
+            throw new Error("problem adding recipe" + response.code);
+        }
+    } catch (error) {
+        alert("problem: " + error);
+    }
+})});
