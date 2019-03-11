@@ -103,7 +103,7 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
                                             "thumbnail": thumbnail
                                         }
                                         */
-                                        body: "date=" + date + "&creator=" + creator + "&title=" + title + "&description=" + description + "&ingredients=[" + newIngredientList + "]&thumbnail=" + thumbnail
+                                        body: "date=" + date + "&creator=" + creator + "&title=" + title + "&description=" + description + "&ingredients=" + encodeURIComponent(JSON.stringify(newIngredientList)) + "&thumbnail=" + thumbnail
                                     });
         console.log(newIngredientList);
         if (!response.ok) {

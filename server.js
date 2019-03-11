@@ -46,13 +46,27 @@ app.post('/new', function(req, resp){
         resp.send("Please complete all fields");
     } 
     */
+    let ingredients = req.body.ingredients.split(",");
+
+    let ingredientList = [];
+    for (let i = 0; i < ingredients.length; i++) {
+        let currentIngredient = ingredients[i];
+        currentIngredient = currentIngredient.replace("\\","");
+        currentIngredient = currentIngredient.replace('"',"");
+        currentIngredient = currentIngredient.replace('"',"");
+        currentIngredient = currentIngredient.replace("[","");
+        currentIngredient = currentIngredient.replace("]","");
+        console.log(currentIngredient);
+        ingredientList.push(currentIngredient);
+    }
+    console.log(ingredientList);
     console.log(req.body);
     let newRecipe = {
         "date" : req.body.date,
         "creator" : req.body.creator,
         "title" : req.body.title,
         "description" : req.body.description,
-        "ingredients" : req.body.ingredients,
+        "ingredients" : ingredientList,
         "thumbnail" : req.body.thumbnail
     };
     recipes.push(newRecipe);
