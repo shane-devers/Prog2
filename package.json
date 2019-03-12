@@ -4,7 +4,7 @@
   "description": "Programming Summative Assignment 2 - website",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "nodemon server.js"
   },
   "repository": {
@@ -21,6 +21,8 @@
     "express": "^4.16.4"
   },
   "devDependencies": {
-    "nodemon": "^1.18.10"
+    "jest": "^24.4.0",
+    "nodemon": "^1.18.10",
+    "supertest": "^4.0.0"
   }
 }
