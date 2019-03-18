@@ -17,3 +17,7 @@
 .ui.primary.button{
     margin: 20px;
 }
+
+.ui.inverted.segment{
+    margin: 0px;
+}

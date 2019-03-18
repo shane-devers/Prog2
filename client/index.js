@@ -8,7 +8,7 @@ $(document).ready(function(){document.getElementById('search').addEventListener(
 })});
 
 async function getResults(event) {
-    let response = await fetch('http://127.0.0.1:8090/recipes');
+    let response = await fetch('/recipes');
     let body = await response.text();
     let recipes = JSON.parse(body);
     let query = document.getElementById('search').value;
@@ -40,12 +40,15 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
         let day = today.getDate();
         let year = today.getFullYear();
         let date = day + " " + month + " " + year;
-        let creator = "baker213";
+        if (document.getElementById('Facebook').innerHTML.indexOf('fb-login') != -1){
+            throw new Error("Please log in to add a new recipe!");
+        }
+        let creator = document.getElementById('Facebook').innerHTML; //"baker213";
         let title = document.getElementById('RecipeTitle').value;
         let description = document.getElementById('RecipeDescription').value;
         let ingredients = document.getElementById('RecipeIngredients').value;
         let thumbnail = document.getElementById('RecipeThumbnail').value;
-        let response = await fetch('http://127.0.0.1:8090/new', {
+        let response = await fetch('/new', {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
@@ -57,6 +60,9 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
             throw new Error("problem adding recipe" + response.code);
         }
     } catch (error) {
-        alert("problem: " + error);
+        alert(error);
     }
 })});
+
+
+
