@@ -65,11 +65,12 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
         if (document.getElementById('Facebook').innerHTML.indexOf('fb-login') != -1){
             throw new Error("Please log in to add a new recipe!");
         }
+        console.log(document.getElementById('RecipeThumbnail'));
         let creator = document.getElementById('Facebook').innerHTML; //"baker213";
         let title = document.getElementById('RecipeTitle').value;
         let description = document.getElementById('RecipeDescription').value;
         let ingredients = document.getElementById('RecipeIngredients').value;
-        let thumbnail = document.getElementById('RecipeThumbnail').value;
+        let thumbnail = document.getElementById('RecipeThumbnail').files[0];
         let response = await fetch('/new', {
             method: "POST",
             headers: {
