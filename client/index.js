@@ -75,15 +75,17 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
         let fD = new FormData();
         fD.append("image", thumbnail);
         console.log(fD);
-        //xhr.open("POST", "/uploadImage");
-        //xhr.send(fD);
-        let imgResponse = await fetch('/uploadImage', {
+        xhr.open("POST", "/uploadImage");
+        //xhr.setRequestHeader("Content-Type", "multipart/form-data");
+        xhr.send(fD);
+        console.log(fD.get("image"));
+/*         let imgResponse = await fetch('/uploadImage', {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             body: "image=" + thumbnail
-        });
+        }); */
         let response = await fetch('/new', {
             method: "POST",
             headers: {
@@ -92,7 +94,7 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
             body: "date=" + date + "&creator=" + creator + "&title=" + title + "&description=" + description + "&ingredients=" + ingredients + "&thumbnail=images/" + thumbnail.name
         });
         getResults(event, "search");
-        if (!response.ok || !imgResponse.ok) {
+        if (!response.ok) {
             throw new Error("problem adding recipe" + response.code);
         }
     } catch (error) {

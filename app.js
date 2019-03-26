@@ -4,6 +4,8 @@ var recipes = require('./recipes.json');
 //recipes = JSON.parse(recipes);
 var bodyParser = require('body-parser');
 var fs = require('file-system');
+var multer = require('multer');
+var upload = multer();
 
 app.use(express.static('client'));
 app.use(bodyParser.urlencoded({extended: true }));
@@ -27,9 +29,14 @@ app.post('/new', function(req, resp){
     resp.send("Recipe successfully added");
 });
 
-app.post('/uploadImage', function(req, resp){
-    console.log(req.body.image.name);
-    fs.writeFile('/images/'+req.body.image.name, req.body.image);
+app.post('/uploadImage', upload.single("image"), async function(req, resp){
+    let formData = req.file.originalname;
+    console.log(formData);
+    //let fD = new FormData();
+    //fD = req.body;
+    let img = req.file;
+    fs.writeFile('/images/'+img.originalname, img);
+    console.log("File should have been written...");
     resp.send("Image uploaded!");
 })
 
