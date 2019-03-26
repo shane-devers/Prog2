@@ -1,10 +1,12 @@
 var express = require('express');
 var app = express();
 var recipes = require('./recipes.json');
+//recipes = JSON.parse(recipes);
 var bodyParser = require('body-parser');
+var fs = require('file-system');
 
 app.use(express.static('client'));
-app.use(bodyParser.urlencoded({extended: false }));
+app.use(bodyParser.urlencoded({extended: true }));
 
 app.get('/recipes', function(req, resp){
     resp.send(recipes);
@@ -21,7 +23,14 @@ app.post('/new', function(req, resp){
         "thumbnail" : req.body.thumbnail
     };
     recipes.push(newRecipe);
+    fs.writeFile('recipes.json', JSON.stringify(recipes));
     resp.send("Recipe successfully added");
 });
+
+app.post('/uploadImage', function(req, resp){
+    console.log(req.body.image.name);
+    fs.writeFile('/images/'+req.body.image.name, req.body.image);
+    resp.send("Image uploaded!");
+})
 
 module.exports = app;

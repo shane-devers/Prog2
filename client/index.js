@@ -71,15 +71,28 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
         let description = document.getElementById('RecipeDescription').value;
         let ingredients = document.getElementById('RecipeIngredients').value;
         let thumbnail = document.getElementById('RecipeThumbnail').files[0];
+        let xhr = new XMLHttpRequest();
+        let fD = new FormData();
+        fD.append("image", thumbnail);
+        console.log(fD);
+        //xhr.open("POST", "/uploadImage");
+        //xhr.send(fD);
+        let imgResponse = await fetch('/uploadImage', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "image=" + thumbnail
+        });
         let response = await fetch('/new', {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: "date=" + date + "&creator=" + creator + "&title=" + title + "&description=" + description + "&ingredients=" + ingredients + "&thumbnail=" + thumbnail
+            body: "date=" + date + "&creator=" + creator + "&title=" + title + "&description=" + description + "&ingredients=" + ingredients + "&thumbnail=images/" + thumbnail.name
         });
         getResults(event, "search");
-        if (!response.ok) {
+        if (!response.ok || !imgResponse.ok) {
             throw new Error("problem adding recipe" + response.code);
         }
     } catch (error) {
