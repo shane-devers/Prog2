@@ -1,7 +1,6 @@
 var express = require('express');
 var app = express();
 var recipes = require('./recipes.json');
-//recipes = JSON.parse(recipes);
 var bodyParser = require('body-parser');
 var fs = require('file-system');
 var multer = require('multer');
