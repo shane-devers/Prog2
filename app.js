@@ -29,14 +29,16 @@ app.post('/new', function(req, resp){
     resp.send("Recipe successfully added");
 });
 
-app.post('/uploadImage', upload.single("image"), async function(req, resp){
-    let formData = req.file.originalname;
+app.post('/uploadImage', upload.single("image"), function(req, resp){
+    let formData = req;
     console.log(formData);
     //let fD = new FormData();
     //fD = req.body;
     let img = req.file;
-    fs.writeFile('/images/'+img.originalname, img);
-    console.log("File should have been written...");
+    fs.writeFile('client/images/'+img.originalname, img.buffer, 'ascii', (err) => {
+        if (err) throw err;
+        console.log("File saved successfully!");
+    });
     resp.send("Image uploaded!");
 })
 
