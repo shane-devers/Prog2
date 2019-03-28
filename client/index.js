@@ -16,6 +16,9 @@ async function getResults(event, criteria, name) {
         query = document.getElementById('search').value;
     } else if (criteria == "name") {
         query = name;
+    } else if (criteria == "ingredient") {
+        let ingredAmount = name.split(" ");
+        query = ingredAmount[1];
     }
     document.getElementById('recipes').innerHTML = "";
     document.getElementById('modals').innerHTML = "";
@@ -27,7 +30,7 @@ async function getResults(event, criteria, name) {
             let scroll = '<p><strong>Ingredients:</strong><br><ul>';
             for (let j = 0; j < recipes[i].ingredients.length; j++) {
                 scroll += '<li><a id="' + recipes[i].title + j + '">' + recipes[i].ingredients[j] + '</a><br></li>';
-                $(document).ready(function(){document.getElementById(recipes[i].title + j).addEventListener('click', function(event){getResults(event,"search");})});
+                $(document).ready(function(){document.getElementById(recipes[i].title + j).addEventListener('click', function(event){getResults(event,"ingredient",recipes[i].ingredients[j]);})});
             }
             scroll += '</ul></p></div>';
             document.getElementById('scroll'+i).innerHTML = scroll;
@@ -45,6 +48,12 @@ function matchesCriteria(recipe, criteria, value){
         }
     } else if (criteria == "name") {
         if (recipe.creator == value) {
+            return true;
+        } else {
+            return false;
+        }
+    } else if (criteria == "ingredient") {
+        if (recipe.ingredients.join("").indexOf(value) != -1) {
             return true;
         } else {
             return false;
