@@ -16,6 +16,9 @@ async function getResults(event, criteria, name) {
         query = document.getElementById('search').value;
     } else if (criteria == "name") {
         query = name;
+    } else if (criteria == "ingredient") {
+        let ingredAmount = name.split(" ");
+        query = ingredAmount[1];
     }
     document.getElementById('recipes').innerHTML = "";
     document.getElementById('modals').innerHTML = "";
@@ -27,7 +30,7 @@ async function getResults(event, criteria, name) {
             let scroll = '<p><strong>Ingredients:</strong><br><ul>';
             for (let j = 0; j < recipes[i].ingredients.length; j++) {
                 scroll += '<li><a id="' + recipes[i].title + j + '">' + recipes[i].ingredients[j] + '</a><br></li>';
-                $(document).ready(function(){document.getElementById(recipes[i].title + j).addEventListener('click', function(event){getResults(event,"search");})});
+                $(document).ready(function(){document.getElementById(recipes[i].title + j).addEventListener('click', function(event){getResults(event,"ingredient",recipes[i].ingredients[j]);})});
             }
             scroll += '</ul></p></div>';
             document.getElementById('scroll'+i).innerHTML = scroll;
@@ -49,6 +52,12 @@ function matchesCriteria(recipe, criteria, value){
         } else {
             return false;
         }
+    } else if (criteria == "ingredient") {
+        if (recipe.ingredients.join("").indexOf(value) != -1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 
@@ -65,17 +74,33 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
         if (document.getElementById('Facebook').innerHTML.indexOf('fb-login') != -1){
             throw new Error("Please log in to add a new recipe!");
         }
+        console.log(document.getElementById('RecipeThumbnail'));
         let creator = document.getElementById('Facebook').innerHTML; //"baker213";
         let title = document.getElementById('RecipeTitle').value;
         let description = document.getElementById('RecipeDescription').value;
         let ingredients = document.getElementById('RecipeIngredients').value;
-        let thumbnail = document.getElementById('RecipeThumbnail').value;
+        let thumbnail = document.getElementById('RecipeThumbnail').files[0];
+        let xhr = new XMLHttpRequest();
+        let fD = new FormData();
+        fD.append("image", thumbnail);
+        console.log(fD);
+        xhr.open("POST", "/uploadImage");
+        //xhr.setRequestHeader("Content-Type", "multipart/form-data");
+        xhr.send(fD);
+        console.log(fD.get("image"));
+/*         let imgResponse = await fetch('/uploadImage', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "image=" + thumbnail
+        }); */
         let response = await fetch('/new', {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: "date=" + date + "&creator=" + creator + "&title=" + title + "&description=" + description + "&ingredients=" + ingredients + "&thumbnail=" + thumbnail
+            body: "date=" + date + "&creator=" + creator + "&title=" + title + "&description=" + description + "&ingredients=" + ingredients + "&thumbnail=images/" + thumbnail.name
         });
         getResults(event, "search");
         if (!response.ok) {
