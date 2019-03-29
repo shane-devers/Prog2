@@ -77,8 +77,39 @@ function getName() {
                 </div>
                 <div class="field">
                     <label>Ingredients:</label>
-                    <textarea type="text" placeholder="Ingredients" name="RecipeIngredients" id="RecipeIngredients"></textarea>
+                    <div class="ui grid" id="IngredientField">
+                        <div class="six wide column">
+                            <div class="ui right labeled input">
+                                <input type="text" placeholder="Quantity">
+                                <div class="ui dropdown label" id="dropdown">
+                                    <div class="ui dropdown">
+                                        <div class="text">No Units</div>
+                                        <i class="dropdown icon"></i>
+                                        <div class="menu">
+                                            <div class="item">No Units</div>
+                                            <div class="item">g</div>
+                                            <div class="item">kg</div>
+                                            <div class="item">oz</div>
+                                            <div class="item">lb</div>
+                                            <div class="item">ml</div>
+                                            <div class="item">l</div>
+                                            <div class="item">fl oz</div>
+                                            <div class="item">cups</div>
+                                            <div class="item">tsp</div>
+                                            <div class="item">tbsp</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="eight wide column">
+                            <div class="ui input">
+                                    <input type="text" placeholder="Ingredient">
+                            </div>
+                        </div>
                     </div>
+                    <button id="AddIngredient">Add</button>
+                </div>
                 <div class="field">
                     <label>Thumbnail:</label>
                     <input type="file" name="RecipeThumbnail" id="RecipeThumbnail" accept="image/*">

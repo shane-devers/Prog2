@@ -112,3 +112,7 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
 })});
 
 $(document).ready(function(){document.getElementById('home').addEventListener('click', function(event) {getResults(event,"search"); document.getElementById('title').innerHTML = "Newest Recipes";})});
+
+$(document).ready(function(){document.getElementById('dropdown').addEventListener('click', function(event) {$('.ui.dropdown').dropdown();})});
+
+$(document).ready(function(){document.getElementById('AddIngredient').addEventListener('click', function(){let i = document.getElementsByClassName('.ui.dropdown.label').length; document.getElementById('IngredientField').innerHTML += '<div class="six wide column"><div class="ui right labeled input"><input type="text" placeholder="Quantity"><div class="ui dropdown label" id="dropdown' + i + '"><div class="ui dropdown" id="dropdown2"><div class="text">No Units</div><i class="dropdown icon"></i><div class="menu"><div class="item">No Units</div><div class="item">g</div><div class="item">kg</div><div class="item">oz</div><div class="item">lb</div><div class="item">ml</div><div class="item">l</div><div class="item">fl oz</div><div class="item">cups</div><div class="item">tsp</div><div class="item">tbsp</div></div></div></div></div></div><div class="eight wide column"><div class="ui input"><input type="text" placeholder="Ingredient"></div></div>';document.getElementById('dropdown'+i).addEventListener('click', function() {$('.ui.dropdown').dropdown();})})})
