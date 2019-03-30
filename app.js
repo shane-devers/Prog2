@@ -14,17 +14,17 @@ app.get('/recipes', function(req, resp){
 });
 
 app.post('/new', function(req, resp){
-    let ingredients = req.body.ingredients.split("\n");
+    //let ingredients = req.body.ingredients.split("\n");
     let newRecipe = {
         "date" : req.body.date,
         "creator" : req.body.creator,
         "title" : req.body.title,
         "description" : req.body.description,
-        "ingredients" : ingredients,
+        "ingredients" : req.body.ingredients,
         "thumbnail" : req.body.thumbnail
     };
     recipes.push(newRecipe);
-    fs.writeFile('recipes.json', JSON.stringify(recipes));
+    //fs.writeFile('recipes.json', JSON.stringify(recipes));
     resp.send("Recipe successfully added");
 });
 

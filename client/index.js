@@ -78,7 +78,16 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
         let creator = document.getElementById('Facebook').innerHTML; //"baker213";
         let title = document.getElementById('RecipeTitle').value;
         let description = document.getElementById('RecipeDescription').value;
-        let ingredients = document.getElementById('RecipeIngredients').value;
+        let ingredients = {};
+        console.log(document.getElementsByClassName('.ui.dropdown').length);
+        for (let i = 0; i < document.getElementsByClassName('.ui.dropdown.label').length; i++) {
+            let newIngredient = {
+                "quantity": document.getElementById('Quantity'+i).value,
+                "unit": document.getElementById('Unit'+i).innerText,
+                "ingredient": document.getElementById('Ingredient'+i).value
+            };
+            ingredients.push(newIngredient);
+        }
         let thumbnail = document.getElementById('RecipeThumbnail').files[0];
         let xhr = new XMLHttpRequest();
         let fD = new FormData();
@@ -115,4 +124,4 @@ $(document).ready(function(){document.getElementById('home').addEventListener('c
 
 $(document).ready(function(){document.getElementById('dropdown').addEventListener('click', function(event) {$('.ui.dropdown').dropdown();})});
 
-$(document).ready(function(){document.getElementById('AddIngredient').addEventListener('click', function(){let i = document.getElementsByClassName('.ui.dropdown.label').length; document.getElementById('IngredientField').innerHTML += '<div class="six wide column"><div class="ui right labeled input"><input type="text" placeholder="Quantity"><div class="ui dropdown label" id="dropdown' + i + '"><div class="ui dropdown" id="dropdown2"><div class="text">No Units</div><i class="dropdown icon"></i><div class="menu"><div class="item">No Units</div><div class="item">g</div><div class="item">kg</div><div class="item">oz</div><div class="item">lb</div><div class="item">ml</div><div class="item">l</div><div class="item">fl oz</div><div class="item">cups</div><div class="item">tsp</div><div class="item">tbsp</div></div></div></div></div></div><div class="eight wide column"><div class="ui input"><input type="text" placeholder="Ingredient"></div></div>';document.getElementById('dropdown'+i).addEventListener('click', function() {$('.ui.dropdown').dropdown();})})})
+$(document).ready(function(){document.getElementById('AddIngredient').addEventListener('click', function(){let i = document.getElementsByClassName('.ui.dropdown').length; document.getElementById('IngredientField').innerHTML += '<div class="six wide column"><div class="ui right labeled input" id="Unit'+i+'"><input type="text" placeholder="Quantity" id="Quantity'+i+'"><div class="ui dropdown label" id="dropdown' + i + '"><div class="ui dropdown" id="dropdown2"><div class="text">No Units</div><i class="dropdown icon"></i><div class="menu"><div class="item">No Units</div><div class="item">g</div><div class="item">kg</div><div class="item">oz</div><div class="item">lb</div><div class="item">ml</div><div class="item">l</div><div class="item">fl oz</div><div class="item">cups</div><div class="item">tsp</div><div class="item">tbsp</div></div></div></div></div></div><div class="eight wide column"><div class="ui input"><input type="text" placeholder="Ingredient" id="Ingredient'+i+'"></div></div>';document.getElementById('dropdown'+i).addEventListener('click', function() {$('.ui.dropdown').dropdown();})})})

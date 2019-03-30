@@ -79,8 +79,8 @@ function getName() {
                     <label>Ingredients:</label>
                     <div class="ui grid" id="IngredientField">
                         <div class="six wide column">
-                            <div class="ui right labeled input">
-                                <input type="text" placeholder="Quantity">
+                            <div class="ui right labeled input" id="Unit0">
+                                <input type="text" placeholder="Quantity" id="Quantity0">
                                 <div class="ui dropdown label" id="dropdown">
                                     <div class="ui dropdown">
                                         <div class="text">No Units</div>
@@ -104,11 +104,12 @@ function getName() {
                         </div>
                         <div class="eight wide column">
                             <div class="ui input">
-                                    <input type="text" placeholder="Ingredient">
+                                    <input type="text" placeholder="Ingredient" id="Ingredient0">
                             </div>
                         </div>
                     </div>
-                    <button id="AddIngredient">Add</button>
+                    <br>
+                    <button type="button" class="ui button" id="AddIngredient">Add</button>
                 </div>
                 <div class="field">
                     <label>Thumbnail:</label>
