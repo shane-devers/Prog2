@@ -17,8 +17,8 @@ async function getResults(event, criteria, name) {
     } else if (criteria == "name") {
         query = name;
     } else if (criteria == "ingredient") {
-        let ingredAmount = name.split(" ");
-        query = ingredAmount[1];
+        //let ingredAmount = name.split(" ");
+        query = name;
     }
     document.getElementById('recipes').innerHTML = "";
     document.getElementById('modals').innerHTML = "";
@@ -29,8 +29,12 @@ async function getResults(event, criteria, name) {
             $(document).ready(function(){document.getElementById("creator"+i).addEventListener("click", function(event){getResults(event,"name",recipes[i].creator);document.getElementById('title').innerHTML = recipes[i].creator +"'s Recipes"; $('#modal'+i).modal('hide');})});
             let scroll = '<p><strong>Ingredients:</strong><br><ul>';
             for (let j = 0; j < recipes[i].ingredients.length; j++) {
-                scroll += '<li><a id="' + recipes[i].title + j + '">' + recipes[i].ingredients[j] + '</a><br></li>';
-                $(document).ready(function(){document.getElementById(recipes[i].title + j).addEventListener('click', function(event){getResults(event,"ingredient",recipes[i].ingredients[j]);})});
+                let unit = "";
+                if (recipes[i].ingredients[j].unit != "No Units") {
+                    unit = recipes[i].ingredients[j].unit;
+                }
+                scroll += '<li><a id="' + recipes[i].title + j + '">' + recipes[i].ingredients[j].quantity + " " + unit + " " + recipes[i].ingredients[j].ingredient + '</a><br></li>';
+                $(document).ready(function(){document.getElementById(recipes[i].title + j).addEventListener('click', function(event){getResults(event,"ingredient",recipes[i].ingredients[j].ingredient);})});
             }
             scroll += '</ul></p></div>';
             document.getElementById('scroll'+i).innerHTML = scroll;
@@ -53,7 +57,8 @@ function matchesCriteria(recipe, criteria, value){
             return false;
         }
     } else if (criteria == "ingredient") {
-        if (recipe.ingredients.join("").indexOf(value) != -1) {
+        let ingredients = JSON.stringify(recipe.ingredients);
+        if (ingredients.indexOf(value) != -1) {
             return true;
         } else {
             return false;
@@ -78,9 +83,9 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
         let creator = document.getElementById('Facebook').innerHTML; //"baker213";
         let title = document.getElementById('RecipeTitle').value;
         let description = document.getElementById('RecipeDescription').value;
-        let ingredients = {};
-        console.log(document.getElementsByClassName('.ui.dropdown').length);
-        for (let i = 0; i < document.getElementsByClassName('.ui.dropdown.label').length; i++) {
+        let ingredients = [];
+        console.log(document.getElementsByClassName('ui dropdown label').length);
+        for (let i = 0; i < document.getElementsByClassName('ui dropdown label').length; i++) {
             let newIngredient = {
                 "quantity": document.getElementById('Quantity'+i).value,
                 "unit": document.getElementById('Unit'+i).innerText,
@@ -109,7 +114,7 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: "date=" + date + "&creator=" + creator + "&title=" + title + "&description=" + description + "&ingredients=" + ingredients + "&thumbnail=images/" + thumbnail.name
+            body: "date=" + date + "&creator=" + creator + "&title=" + title + "&description=" + description + "&ingredients=" + JSON.stringify(ingredients) + "&thumbnail=images/" + thumbnail.name
         });
         getResults(event, "search");
         if (!response.ok) {
@@ -124,4 +129,4 @@ $(document).ready(function(){document.getElementById('home').addEventListener('c
 
 $(document).ready(function(){document.getElementById('dropdown').addEventListener('click', function(event) {$('.ui.dropdown').dropdown();})});
 
-$(document).ready(function(){document.getElementById('AddIngredient').addEventListener('click', function(){let i = document.getElementsByClassName('.ui.dropdown').length; document.getElementById('IngredientField').innerHTML += '<div class="six wide column"><div class="ui right labeled input" id="Unit'+i+'"><input type="text" placeholder="Quantity" id="Quantity'+i+'"><div class="ui dropdown label" id="dropdown' + i + '"><div class="ui dropdown" id="dropdown2"><div class="text">No Units</div><i class="dropdown icon"></i><div class="menu"><div class="item">No Units</div><div class="item">g</div><div class="item">kg</div><div class="item">oz</div><div class="item">lb</div><div class="item">ml</div><div class="item">l</div><div class="item">fl oz</div><div class="item">cups</div><div class="item">tsp</div><div class="item">tbsp</div></div></div></div></div></div><div class="eight wide column"><div class="ui input"><input type="text" placeholder="Ingredient" id="Ingredient'+i+'"></div></div>';document.getElementById('dropdown'+i).addEventListener('click', function() {$('.ui.dropdown').dropdown();})})})
+$(document).ready(function(){document.getElementById('AddIngredient').addEventListener('click', function(){let i = document.getElementsByClassName('ui dropdown label').length; document.getElementById('IngredientField').innerHTML += '<div class="six wide column"><div class="ui right labeled input" id="Unit'+i+'"><input type="text" placeholder="Quantity" id="Quantity'+i+'"><div class="ui dropdown label" id="dropdown' + i + '"><div class="ui dropdown"><div class="text">No Units</div><i class="dropdown icon"></i><div class="menu"><div class="item">No Units</div><div class="item">g</div><div class="item">kg</div><div class="item">oz</div><div class="item">lb</div><div class="item">ml</div><div class="item">l</div><div class="item">fl oz</div><div class="item">cups</div><div class="item">tsp</div><div class="item">tbsp</div></div></div></div></div></div><div class="eight wide column"><div class="ui input"><input type="text" placeholder="Ingredient" id="Ingredient'+i+'"></div></div>';document.getElementById('dropdown'+i).addEventListener('click', function() {$('.ui.dropdown').dropdown();})})})
