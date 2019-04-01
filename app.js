@@ -15,24 +15,22 @@ app.get('/recipes', function(req, resp){
 
 app.post('/new', function(req, resp){
     let ingredients = JSON.parse(req.body.ingredients);
+    let directions = req.body.directions.split('\n');
     let newRecipe = {
         "date" : req.body.date,
         "creator" : req.body.creator,
         "title" : req.body.title,
         "description" : req.body.description,
         "ingredients" : ingredients,
+        "directions" : directions,
         "thumbnail" : req.body.thumbnail
     };
     recipes.push(newRecipe);
-    fs.writeFile('recipes.json', JSON.stringify(recipes));
+    //fs.writeFile('recipes.json', JSON.stringify(recipes));
     resp.send("Recipe successfully added");
 });
 
 app.post('/uploadImage', upload.single("image"), function(req, resp){
-    let formData = req;
-    console.log(formData);
-    //let fD = new FormData();
-    //fD = req.body;
     let img = req.file;
     fs.writeFile('client/images/'+img.originalname, img.buffer, 'ascii', (err) => {
         if (err) throw err;
