@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', async function(event){
     getResults(event, "search");
     $(document).ready(function(){document.getElementById('NewBtn').addEventListener('click', function(){$('#newRecipe').modal('show');})})
     $('.ui.dropdown').dropdown();
+    $('.ui.dropdown.unit').dropdown();
+    $('.ui.dropdown.unit').dropdown('setting', 'onChange', function(){console.log("H");getResults(event, "search")});
 });
 
 $(document).ready(function(){document.getElementById('search').addEventListener('input', async function(event){
@@ -13,6 +15,7 @@ async function getResults(event, criteria, name) {
     let body = await response.text();
     let recipes = JSON.parse(body);
     let query = "";
+    let unitSystem = document.getElementById('unitSelect').innerText.replace(" ","");
     if (criteria == "search"){
         query = document.getElementById('search').value;
     } else if (criteria == "name") {
@@ -25,6 +28,19 @@ async function getResults(event, criteria, name) {
     document.getElementById('modals').innerHTML = "";
     for (let i = recipes.length-1; i > -1; i--) {
         if (matchesCriteria(recipes[i], criteria, query)){
+            let newUnits = [];
+            for (let j = 0; j < recipes[i].ingredients.length; j++) {
+                let value = recipes[i].ingredients[j].quantity;
+                let unit = recipes[i].ingredients[j].unit;
+                let inSystem = "";
+                if (["g", "kg", "l", "ml"].indexOf(unit) != -1) {
+                    inSystem = "Metric";
+                } else if (unit != "No Units") {
+                    inSystem = "Imperial";
+                }
+                newUnits.push(convertUnits(inSystem, unitSystem, value, unit));
+            }
+            console.log(newUnits);
             document.getElementById('recipes').innerHTML += '<div class="card" id="' + recipes[i].title + '"><div class="image"><img src=' + recipes[i].thumbnail + '></div><div class="content"><div class="header">' + recipes[i].title + '</div><div class="description">' + recipes[i].description + '</div></div><div class="extra content"><span class="right floated">' + recipes[i].date + '</span><span><i class="user icon"></i>' + recipes[i].creator + '</span></div></div>';
             document.getElementById('modals').innerHTML += '<div class="ui modal" id="modal'+i+'"><div class="header">'+recipes[i].title+'<br>Creator: <a href="#" id="creator'+i+'">' + recipes[i].creator + '</a></div><img class="ui medium image" src="'+recipes[i].thumbnail+'"><div class="scrolling content" id="scroll'+ i+'">';
             $(document).ready(function(){document.getElementById("creator"+i).addEventListener("click", function(event){getResults(event,"name",recipes[i].creator);document.getElementById('title').innerHTML = recipes[i].creator +"'s Recipes"; $('#modal'+i).modal('hide');})});
@@ -34,7 +50,7 @@ async function getResults(event, criteria, name) {
                 if (recipes[i].ingredients[j].unit != "No Units") {
                     unit = recipes[i].ingredients[j].unit;
                 }
-                scroll += '<li><a id="' + recipes[i].title + j + '">' + recipes[i].ingredients[j].quantity + " " + unit + " " + recipes[i].ingredients[j].ingredient + '</a><br></li>';
+                scroll += '<li><a id="' + recipes[i].title + j + '">' + newUnits[j] + " " + recipes[i].ingredients[j].ingredient + '</a><br></li>';
                 $(document).ready(function(){document.getElementById(recipes[i].title + j).addEventListener('click', function(event){getResults(event,"ingredient",recipes[i].ingredients[j].ingredient);})});
             }
             scroll += '</ul></p><br><p><strong>Directions:</strong><br><ol>';
@@ -44,6 +60,64 @@ async function getResults(event, criteria, name) {
             scroll += '</ol></p></div>';
             document.getElementById('scroll'+i).innerHTML = scroll;
             $(document).ready(function(){document.getElementById(recipes[i].title).addEventListener('click', function(){$('#modal' + i).modal('show');})})
+        }
+    }
+}
+
+function convertUnits(input, output, value, unit){
+    if (input == output) {
+        if (unit != "No Units"){
+            return value + " " + unit;
+        } else {
+            return value;
+        }
+    } else {
+        let amount = 0;
+        switch (unit) {
+            case "cups":
+                amount = value * 236.588;
+                if (amount >= 1000) {
+                    return (amount/1000).toFixed(2) + " l";
+                } else {
+                    return Math.round(amount) + " ml";
+                }
+            case "fl oz":
+                amount = value * 28.413;
+                if (amount >= 1000) {
+                    return (amount/1000).toFixed(2) + " l";
+                } else {
+                    return Math.round(amount) + " ml";
+                }
+            case "l":
+                amount = value * 35.195;
+                return amount.toFixed(2) + " fl oz";
+            case "ml":
+                amount = value / 28.413;
+                return amount.toFixed(2) + " fl oz";
+            case "oz":
+                amount = value * 28.35;
+                return Math.round(amount) + " g";
+            case "lb":
+                amount = value * 453.592;
+                if (amount >= 1000) {
+                    return (amount/1000).toFixed(2) + " kg";
+                } else {
+                    return Math.round(amount) + " g";
+                }
+            case "g":
+                amount = value / 28.35;
+                if (amount >= 16) {
+                    return (amount/16).toFixed(2) + " lb";
+                } else {
+                    return amount.toFixed(2) + " oz";
+                }
+            case "kg":
+                amount = value * 2.205;
+                return amount.toFixed(2) + " lb";
+            case "No Units":
+                return value;
+            default:
+                return value + " " + unit;
         }
     }
 }
