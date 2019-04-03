@@ -10,39 +10,6 @@
         <link rel="stylesheet" type="text/css" href="index.css">       
     </head>
     <body>
-        <script>
-            window.fbAsyncInit = function() {
-                FB.init({
-                appId            : 400507017396771,
-                autoLogAppEvents : true,
-                xfbml            : true,
-                version          : 'v3.2'
-                });
-            };
-
-            function checkLoginState() {
-            FB.getLoginStatus(function(response) {
-    if (response.status === 'connected') {
-        console.log("Connected");
-        console.log(response.name);
-        console.log(response);
-        getName();
-    } else {
-        console.log(response.status);
-    }
-})}
-
-function getName() {
-    let name = "";
-    FB.api('/me', function(response) {
-        document.getElementById('Facebook').innerHTML = response.name;
-        return response.name;
-    });
-    console.log(name);
-    //document.getElementById('Facebook').innerHTML = name;
-    return name;
-}
-   </script>
         <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
         <div class="ui inverted segment">
             <div class="ui inverted secondary pointing menu">
