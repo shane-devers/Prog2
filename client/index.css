@@ -21,3 +21,20 @@
 .ui.inverted.segment{
     margin: 0px;
 }
+
+.ui.modal {
+    max-height: 85%;
+    height: 85%;
+}
+
+.scrolling.content {
+    max-height: 100%;
+}
+
+.right.menu {
+    text-align: right;
+}
+
+#search {
+    margin: 20px;
+}
