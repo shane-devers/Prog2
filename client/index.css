@@ -23,8 +23,8 @@
 }
 
 .ui.modal {
-    max-height: 85%;
-    height: 85%;
+    max-height: 80%;
+    height: 80%;
 }
 
 .scrolling.content {
@@ -36,5 +36,9 @@
 }
 
 #search {
-    margin: 20px;
+    margin-left: 20px;
+}
+
+#unitSelect {
+    margin-left: 20px;
 }
