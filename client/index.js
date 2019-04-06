@@ -48,7 +48,6 @@ async function getResults(event, criteria, name) {
     let body = await response.text();
     let recipes = JSON.parse(body);
     let query = "";
-    let unitSystem = $('.ui.dropdown.unit').dropdown('get value') || "metric";//document.getElementById('unitSelect').innerText.replace(" ","");
     if (criteria == "search"){
         query = document.getElementById('search').value;
     } else if (criteria == "name") {
@@ -60,35 +59,40 @@ async function getResults(event, criteria, name) {
     document.getElementById('modals').innerHTML = "";
     for (let i = recipes.length-1; i > -1; i--) {
         if (matchesCriteria(recipes[i], criteria, query)){
-            let newUnits = [];
-            for (let j = 0; j < recipes[i].ingredients.length; j++) {
-                let value = recipes[i].ingredients[j].quantity;
-                let unit = recipes[i].ingredients[j].unit;
-                let inSystem = "";
-                if (["g", "kg", "l", "ml"].indexOf(unit) != -1) {
-                    inSystem = "metric";
-                } else if (unit != "No Units") {
-                    inSystem = "imperial";
-                }
-                newUnits.push(convertUnits(inSystem, unitSystem, value, unit));
-            }
             document.getElementById('recipes').innerHTML += '<div class="card" id="' + recipes[i].title + '"><div class="image"><img src=' + recipes[i].thumbnail + '></div><div class="content"><div class="header">' + recipes[i].title + '</div><div class="description">' + recipes[i].description + '</div></div><div class="extra content"><span class="right floated">' + recipes[i].date + '</span><span><i class="user icon"></i>' + recipes[i].creator + '</span></div></div>';
-            document.getElementById('modals').innerHTML += '<div class="ui modal" id="modal'+i+'"><div class="header">'+recipes[i].title+'<br>Creator: <a href="#" id="creator'+i+'">' + recipes[i].creator + '</a></div><i class="close icon"></i><div class="scrolling content" id="scroll'+ i+'">';
-            $(document).ready(function(){document.getElementById("creator"+i).addEventListener("click", function(event){getResults(event,"name",recipes[i].creator);document.getElementById('title').innerHTML = recipes[i].creator +"'s Recipes"; $('#modal'+i).modal('hide');})});
-            let scroll = '<img class="ui medium image" src="'+recipes[i].thumbnail+'"><br><p><strong>Ingredients:</strong><br><ul>';
-            for (let j = 0; j < recipes[i].ingredients.length; j++) {
-                scroll += '<li><a id="' + recipes[i].title + "-" + j + '">' + newUnits[j] + " " + recipes[i].ingredients[j].ingredient + '</a><br></li>';
-                $(document).ready(function(){document.getElementById(recipes[i].title + "-" + j).addEventListener('click', function(event){getResults(event,"ingredient",recipes[i].ingredients[j].ingredient);})});
-            }
-            scroll += '</ul></p><br><p><strong>Directions:</strong><br><ol>';
-            for (let j = 0; j < recipes[i].directions.length; j++) {
-                scroll += '<li>' + recipes[i].directions[j] + '<br></li>';
-            }
-            scroll += '</ol></p></div>';
-            document.getElementById('scroll'+i).innerHTML = scroll;
-            $(document).ready(function(){document.getElementById(recipes[i].title).addEventListener('click', function(){$('#modal' + i).modal('show');})})
+            document.getElementById('modals').innerHTML += '<div class="ui modal" id="modal'+i+'"></div>';
+            $(document).ready(function(){document.getElementById(recipes[i].title).addEventListener('click', function(){createModal(recipes, i); $('#modal' + i).modal('show');})})
         }
     }
+}
+
+function createModal(recipes, i) {
+    let unitSystem = $('.ui.dropdown.unit').dropdown('get value') || "metric";//document.getElementById('unitSelect').innerText.replace(" ","");
+    let newUnits = [];
+    for (let j = 0; j < recipes[i].ingredients.length; j++) {
+        let value = recipes[i].ingredients[j].quantity;
+        let unit = recipes[i].ingredients[j].unit;
+        let inSystem = "";
+        if (["g", "kg", "l", "ml"].indexOf(unit) != -1) {
+            inSystem = "metric";
+        } else if (unit != "No Units") {
+            inSystem = "imperial";
+        }
+        newUnits.push(convertUnits(inSystem, unitSystem, value, unit));
+    }
+    document.getElementById('modal'+i).innerHTML = '<div class="header">'+recipes[i].title+'<br>Creator: <a href="#" id="creator'+i+'">' + recipes[i].creator + '</a></div><i class="close icon"></i><div class="scrolling content" id="scroll'+ i+'">';
+    $(document).ready(function(){document.getElementById("creator"+i).addEventListener("click", function(event){getResults(event,"name",recipes[i].creator);document.getElementById('title').innerHTML = recipes[i].creator +"'s Recipes"; $('#modal'+i).modal('hide');})});
+    let scroll = '<img class="ui medium image" src="'+recipes[i].thumbnail+'"><br><p><strong>Ingredients:</strong><br><ul>';
+    for (let j = 0; j < recipes[i].ingredients.length; j++) {
+        scroll += '<li><a id="' + recipes[i].title + "-" + j + '">' + newUnits[j] + " " + recipes[i].ingredients[j].ingredient + '</a><br></li>';
+        $(document).ready(function(){document.getElementById(recipes[i].title + "-" + j).addEventListener('click', function(event){getResults(event,"ingredient",recipes[i].ingredients[j].ingredient);})});
+    }
+    scroll += '</ul></p><br><p><strong>Directions:</strong><br><ol>';
+    for (let j = 0; j < recipes[i].directions.length; j++) {
+        scroll += '<li>' + recipes[i].directions[j] + '<br></li>';
+    }
+    scroll += '</ol></p></div>';
+    document.getElementById('scroll'+i).innerHTML = scroll;
 }
 
 function convertUnits(input, output, value, unit){
