@@ -26,13 +26,13 @@ app.post('/new', function(req, resp){
         "thumbnail" : req.body.thumbnail
     };
     recipes.push(newRecipe);
-    //fs.writeFile('recipes.json', JSON.stringify(recipes));
+    fs.writeFile('recipes.json', JSON.stringify(recipes));
     resp.send("Recipe successfully added");
 });
 
 app.post('/uploadImage', upload.single("image"), function(req, resp){
     let img = req.file;
-    fs.writeFile('client/images/'+img.originalname, img.buffer, 'ascii', (err) => {
+    fs.writeFile('client/images/'+img.originalname.replace(" ","_"), img.buffer, 'ascii', (err) => {
         if (err) throw err;
         console.log("File saved successfully!");
     });
