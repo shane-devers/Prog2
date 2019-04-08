@@ -85,8 +85,45 @@ function createModal(recipes, i) {
     for (let j = 0; j < recipes[i].directions.length; j++) {
         scroll += '<li>' + recipes[i].directions[j] + '<br></li>';
     }
-    scroll += '</ol></p></div>';
+    scroll += '</ol></p><div class="ui comments"><h3 class="ui dividing header">Comments</h3>';
+    for (let j = 0; j < recipes[i].comments.length; j++) {
+        scroll += '<div class="comment"><a class="avatar"></a><div class="content"><a class="author">'+recipes[i].comments[j].author+'</a><div class="metadata"><span class="date">'+recipes[i].comments[j].date+'</span></div><div class="text">'+recipes[i].comments[j].text+'</div><div class="actions"><a class="reply">Reply</a></div></div></div>';
+    }
+    scroll += '<form class="ui reply form" method="POST" action="/addComment" id="commentForm'+i+'"><div class="field"><textarea id="commentBox'+i+'"></textarea></div><button class="ui blue labeled submit icon button" type="submit"><i class="icon edit"></i>Add Comment</button></form><br><br></div></div>';
     document.getElementById('scroll'+i).innerHTML = scroll;
+    $(document).ready(function(){document.getElementById('commentForm'+i).addEventListener('submit', function(event){addComment(event, i);})});
+}
+
+async function addComment(event, i) {
+    console.log(i);
+    event.preventDefault();
+    let today = new Date();
+    let m = today.getMonth();
+    let months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    let month = months[m];
+    let day = today.getDate();
+    let year = today.getFullYear();
+    let date = day + ' ' + month + ' ' + year;
+    /*                 if (document.getElementById('Facebook').innerHTML.indexOf('fb-login') != -1){
+        throw new Error('Please log in to add a new recipe!');
+    } */
+    let creator = document.getElementById('Facebook').innerHTML;
+    let text = document.getElementById('commentBox'+i).value;
+    /*     let newComment = {
+        "author": creator,
+        "date": date,
+        "text": document.getElementById('commentBox'+i).value
+    } */
+    let response = await fetch('/addComment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'date=' + date + '&author=' + creator + '&text=' + text + '&recipe=' + i
+    });
+    if (!response.ok) {
+        throw new Error('problem adding recipe' + response.code);
+    }
 }
 
 function convertUnits(input, output, value, unit){

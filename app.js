@@ -39,4 +39,17 @@ app.post('/uploadImage', upload.single("image"), function(req, resp){
     resp.send("Image uploaded!");
 })
 
+app.post('/addComment', function(req, resp){
+    console.log(req.body);
+    let i = req.body.recipe;
+    let newComment = {
+        "author": req.body.author,
+        "date": req.body.date,
+        "text": req.body.text
+    }
+    recipes[i].comments.push(newComment);
+    fs.writeFile('recipes.json', JSON.stringify(recipes));
+    resp.send("Recipe successfully added");
+})
+
 module.exports = app;
