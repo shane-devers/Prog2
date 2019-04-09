@@ -43,6 +43,7 @@ async function getResults(event, criteria, name) {
     let recipes = JSON.parse(body);
     let query = '';
     if (criteria == 'search'){
+        document.getElementById('title').innerHTML = 'Newest Recipes';
         query = document.getElementById('search').value;
     } else if (criteria == 'name') {
         query = name;
@@ -75,11 +76,11 @@ function createModal(recipes, i) {
         newUnits.push(convertUnits(inSystem, unitSystem, value, unit));
     }
     document.getElementById('modal'+i).innerHTML = '<div class="header">'+recipes[i].title+'<br>Creator: <a href="#" id="creator'+i+'">' + recipes[i].creator + '</a></div><i class="close icon"></i><div class="scrolling content" id="scroll'+ i+'">';
-    $(document).ready(function(){document.getElementById('creator'+i).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator);document.getElementById('title').innerHTML = recipes[i].creator +"'s Recipes"; $('#modal'+i).modal('hide');});});
+    $(document).ready(function(){document.getElementById('creator'+i).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator);document.getElementById('title').innerHTML = recipes[i].creator +"'s Recipes"; $('.ui.modal').modal('hide');});});
     let scroll = '<img class="ui medium image" src="'+recipes[i].thumbnail+'"><br><p><strong>Ingredients:</strong><br><ul>';
     for (let j = 0; j < recipes[i].ingredients.length; j++) {
-        scroll += '<li><a id="' + recipes[i].title + '-' + j + '">' + newUnits[j] + ' ' + recipes[i].ingredients[j].ingredient + '</a><br></li>';
-        $(document).ready(function(){document.getElementById(recipes[i].title + '-' + j).addEventListener('click', function(event){getResults(event,'ingredient',recipes[i].ingredients[j].ingredient);});});
+        scroll += '<li><a id="' + recipes[i].title + '-' + j + '" href="#">' + newUnits[j] + ' ' + recipes[i].ingredients[j].ingredient + '</a><br></li>';
+        $(document).ready(function(){document.getElementById(recipes[i].title + '-' + j).addEventListener('click', function(event){getResults(event,'ingredient',recipes[i].ingredients[j].ingredient); $('.ui.modal').modal('hide'); document.getElementById('title').innerHTML = 'Newest Recipes containing "' + recipes[i].ingredients[j].ingredient + '"';});});
     }
     scroll += '</ul></p><br><p><strong>Directions:</strong><br><ol>';
     for (let j = 0; j < recipes[i].directions.length; j++) {
@@ -97,13 +98,7 @@ function createModal(recipes, i) {
 async function addComment(event, i) {
     console.log(i);
     event.preventDefault();
-    let today = new Date();
-    let m = today.getMonth();
-    let months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    let month = months[m];
-    let day = today.getDate();
-    let year = today.getFullYear();
-    let date = day + ' ' + month + ' ' + year;
+    let date = getDate();
     /*                 if (document.getElementById('Facebook').innerHTML.indexOf('fb-login') != -1){
         throw new Error('Please log in to add a new recipe!');
     } */
@@ -124,6 +119,17 @@ async function addComment(event, i) {
     if (!response.ok) {
         throw new Error('problem adding recipe' + response.code);
     }
+}
+
+function getDate() {
+    let today = new Date();
+    let m = today.getMonth();
+    let months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    let month = months[m];
+    let day = today.getDate();
+    let year = today.getFullYear();
+    let date = day + ' ' + month + ' ' + year;
+    return date;
 }
 
 function convertUnits(input, output, value, unit){
@@ -223,13 +229,7 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
 });});
 
 async function submitValues() {
-    let today = new Date();
-    let m = today.getMonth();
-    let months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    let month = months[m];
-    let day = today.getDate();
-    let year = today.getFullYear();
-    let date = day + ' ' + month + ' ' + year;
+    let date = getDate();
     /*                 if (document.getElementById('Facebook').innerHTML.indexOf('fb-login') != -1){
         throw new Error('Please log in to add a new recipe!');
     } */
