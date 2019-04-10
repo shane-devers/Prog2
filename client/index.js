@@ -77,12 +77,12 @@ function createModal(recipes, i) {
     }
     document.getElementById('modal'+i).innerHTML = '<div class="header">'+recipes[i].title+'<br>Creator: <a href="#" id="creator'+i+'">' + recipes[i].creator + '</a></div><i class="close icon"></i><div class="scrolling content" id="scroll'+ i+'">';
     $(document).ready(function(){document.getElementById('creator'+i).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator);document.getElementById('title').innerHTML = recipes[i].creator +"'s Recipes"; $('.ui.modal').modal('hide');});});
-    let scroll = '<img class="ui medium image" src="'+recipes[i].thumbnail+'"><br><p><strong>Ingredients:</strong><br><ul>';
+    let scroll = '<img class="ui medium image" src="'+recipes[i].thumbnail+'"><br><p><h3 class="ui dividing header">Ingredients</h3><ul>';
     for (let j = 0; j < recipes[i].ingredients.length; j++) {
         scroll += '<li><a id="' + recipes[i].title + '-' + j + '" href="#">' + newUnits[j] + ' ' + recipes[i].ingredients[j].ingredient + '</a><br></li>';
         $(document).ready(function(){document.getElementById(recipes[i].title + '-' + j).addEventListener('click', function(event){getResults(event,'ingredient',recipes[i].ingredients[j].ingredient); $('.ui.modal').modal('hide'); document.getElementById('title').innerHTML = 'Newest Recipes containing "' + recipes[i].ingredients[j].ingredient + '"';});});
     }
-    scroll += '</ul></p><br><p><strong>Directions:</strong><br><ol>';
+    scroll += '</ul></p><p><h3 class="ui dividing header">Directions</h3><ol>';
     for (let j = 0; j < recipes[i].directions.length; j++) {
         scroll += '<li>' + recipes[i].directions[j] + '<br></li>';
     }
@@ -269,4 +269,18 @@ $(document).ready(function(){document.getElementById('home').addEventListener('c
 
 //$(document).ready(function(){document.getElementById('dropdown').addEventListener('click', function(event) {$('.ui.dropdown').dropdown();})});
 
-$(document).ready(function(){document.getElementById('AddIngredient').addEventListener('click', function(){let i = document.getElementsByClassName('ui dropdown label').length - 1; document.getElementById('IngredientField').innerHTML += '<div class="left floated eight wide column"><div class="ui right labeled input" id="Unit'+i+'"><input type="text" placeholder="Quantity" id="Quantity'+i+'"><div class="ui dropdown label" id="dropdown' + i + '"><div class="text">No Units</div><i class="dropdown icon"></i><div class="menu"><div class="item">No Units</div><div class="item">g</div><div class="item">kg</div><div class="item">oz</div><div class="item">lb</div><div class="item">ml</div><div class="item">l</div><div class="item">fl oz</div><div class="item">cups</div><div class="item">tsp</div><div class="item">tbsp</div></div></div></div></div><div class="right floated eight wide column"><div class="ui input"><input type="text" placeholder="Ingredient" id="Ingredient'+i+'"></div></div>';$('.ui.dropdown').dropdown();});}); //document.getElementById('dropdown'+i).addEventListener('click', function() {$('.ui.dropdown').dropdown();
+$(document).ready(function(){document.getElementById('AddIngredient').addEventListener('click', function(){let i = document.getElementsByClassName('ui dropdown label').length - 1; 
+let contents = [];
+for (let j = 0; j < i; j++) {
+    let newItem = {
+        'quantity': document.getElementById('Quantity'+j).value,
+        'ingredient': document.getElementById('Ingredient'+j).value
+    }
+    contents.push(newItem);
+}
+document.getElementById('IngredientField').innerHTML += '<div class="left floated eight wide column"><div class="ui right labeled input" id="Unit'+i+'"><input type="text" placeholder="Quantity" id="Quantity'+i+'"><div class="ui dropdown label" id="dropdown' + i + '"><div class="text">No Units</div><i class="dropdown icon"></i><div class="menu"><div class="item">No Units</div><div class="item">g</div><div class="item">kg</div><div class="item">oz</div><div class="item">lb</div><div class="item">ml</div><div class="item">l</div><div class="item">fl oz</div><div class="item">cups</div><div class="item">tsp</div><div class="item">tbsp</div></div></div></div></div><div class="right floated eight wide column"><div class="ui input"><input type="text" placeholder="Ingredient" id="Ingredient'+i+'"></div></div>';$('.ui.dropdown').dropdown();
+for (let j = 0; j < i; j++) {
+    document.getElementById('Quantity'+j).value = contents[j].quantity;
+    document.getElementById('Ingredient'+j).value = contents[j].ingredient;
+}
+});}); //document.getElementById('dropdown'+i).addEventListener('click', function() {$('.ui.dropdown').dropdown();
