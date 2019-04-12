@@ -9,9 +9,45 @@ var upload = multer();
 app.use(express.static('client'));
 app.use(bodyParser.urlencoded({extended: true }));
 
-app.get('/recipes', function(req, resp){
-    resp.send(recipes);
+app.get('/recipes/c/:criteria/v/:value', function(req, resp){
+    console.log(req.params);
+    let criteria = req.params.criteria.replace(':','');
+    let value = req.params.value.replace(':','');
+    let outputRecipes = [];
+    if (value == ''){
+        outputRecipes = recipes;
+    } else {
+        for (let i = 0; i < recipes.length; i++) {
+            if (matchesCriteria(recipes[i], criteria, value)) {
+                outputRecipes.push(recipes[i]);
+            }
+        }
+    }
+    resp.send(outputRecipes);
 });
+
+function matchesCriteria(recipe, criteria, value){
+    if (criteria == 'search') {
+        if (recipe.title.toUpperCase().includes(value.toUpperCase())){
+            return true;
+        } else {
+            return false;
+        }
+    } else if (criteria == 'name') {
+        if (recipe.creator == value) {
+            return true;
+        } else {
+            return false;
+        }
+    } else if (criteria == 'ingredient') {
+        let ingredients = JSON.stringify(recipe.ingredients);
+        if (ingredients.toUpperCase().indexOf(value.toUpperCase()) != -1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
 
 app.post('/new', function(req, resp){
     let ingredients = JSON.parse(req.body.ingredients);

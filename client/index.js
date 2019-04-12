@@ -38,9 +38,6 @@ $(document).ready(function(){document.getElementById('search').addEventListener(
 });});
 
 async function getResults(event, criteria, name) {
-    let response = await fetch('/recipes');
-    let body = await response.text();
-    let recipes = JSON.parse(body);
     let query = '';
     if (criteria == 'search'){
         document.getElementById('title').innerHTML = 'Newest Recipes';
@@ -50,14 +47,15 @@ async function getResults(event, criteria, name) {
     } else if (criteria == 'ingredient') {
         query = name;
     }
+    let response = await fetch('/recipes/c/:'+criteria+'/v/:'+query);
+    let body = await response.text();
+    let recipes = JSON.parse(body);
     document.getElementById('recipes').innerHTML = '';
     document.getElementById('modals').innerHTML = '';
     for (let i = recipes.length-1; i > -1; i--) {
-        if (matchesCriteria(recipes[i], criteria, query)){
-            document.getElementById('recipes').innerHTML += '<div class="card" id="' + recipes[i].title + '"><div class="image"><img src=' + recipes[i].thumbnail + '></div><div class="content"><div class="header">' + recipes[i].title + '</div><div class="description">' + recipes[i].description + '</div></div><div class="extra content"><span class="right floated">' + recipes[i].date + '</span><span><i class="user icon"></i>' + recipes[i].creator + '</span></div></div>';
-            document.getElementById('modals').innerHTML += '<div class="ui modal" id="modal'+i+'"></div>';
-            $(document).ready(function(){document.getElementById(recipes[i].title).addEventListener('click', function(){createModal(recipes, i); $('#modal' + i).modal('show');});});
-        }
+        document.getElementById('recipes').innerHTML += '<div class="card" id="' + recipes[i].title + '"><div class="image"><img src=' + recipes[i].thumbnail + '></div><div class="content"><div class="header">' + recipes[i].title + '</div><div class="description">' + recipes[i].description + '</div></div><div class="extra content"><span class="right floated">' + recipes[i].date + '</span><span><i class="user icon"></i>' + recipes[i].creator + '</span></div></div>';
+        document.getElementById('modals').innerHTML += '<div class="ui modal" id="modal'+i+'"></div>';
+        $(document).ready(function(){document.getElementById(recipes[i].title).addEventListener('click', function(){createModal(recipes, i); $('#modal' + i).modal('show');});});
     }
 }
 
@@ -186,29 +184,6 @@ function convertUnits(input, output, value, unit){
             return value;
         default:
             return value + ' ' + unit;
-        }
-    }
-}
-
-function matchesCriteria(recipe, criteria, value){
-    if (criteria == 'search') {
-        if (recipe.title.toUpperCase().includes(value.toUpperCase())){
-            return true;
-        } else {
-            return false;
-        }
-    } else if (criteria == 'name') {
-        if (recipe.creator == value) {
-            return true;
-        } else {
-            return false;
-        }
-    } else if (criteria == 'ingredient') {
-        let ingredients = JSON.stringify(recipe.ingredients);
-        if (ingredients.toUpperCase().indexOf(value.toUpperCase()) != -1) {
-            return true;
-        } else {
-            return false;
         }
     }
 }
