@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var recipes = require('./recipes.json');
+var userIDName = require('./userIDName.json');
 var bodyParser = require('body-parser');
 var fs = require('file-system');
 var multer = require('multer');
@@ -48,6 +49,15 @@ function matchesCriteria(recipe, criteria, value){
         }
     }
 }
+
+app.get('/userIDName/:userID', function(req, resp){
+    console.log(req.params.userID);
+    if (userIDName.hasOwnProperty(req.params.userID.replace(':',''))){
+        resp.send(true);
+    } else {
+        resp.send(false);
+    }
+})
 
 app.post('/new', function(req, resp){
     let ingredients = JSON.parse(req.body.ingredients);

@@ -9,9 +9,14 @@ window.fbAsyncInit = function() {
 };
 
 function checkLoginState() {
-    FB.getLoginStatus(function(response) {
+    FB.getLoginStatus(async function(response) {
         if (response.status === 'connected') {
             getName();
+            let response2 = await fetch('/userIDName/'+response.authResponse.userID);
+            console.log(response2.text());
+            if (response2.body == 'false'){
+                console.log(response.authResponse.userID);
+            }
         }
     });
 }
