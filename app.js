@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var recipes = require('./recipes.json');
 var userIDName = require('./userIDName.json');
+var profiles = require('./profiles.json');
 var bodyParser = require('body-parser');
 var fs = require('file-system');
 var multer = require('multer');
@@ -10,7 +11,7 @@ var upload = multer();
 app.use(express.static('client'));
 app.use(bodyParser.urlencoded({extended: true }));
 
-app.get('/recipes/c/:criteria/v/:value', function(req, resp){
+app.get('/recipes/:criteria/:value', function(req, resp){
     console.log(req.params);
     let criteria = req.params.criteria.replace(':','');
     let value = req.params.value.replace(':','');
@@ -52,11 +53,15 @@ function matchesCriteria(recipe, criteria, value){
 
 app.get('/userIDName/:userID', function(req, resp){
     console.log(req.params.userID);
-    if (userIDName.hasOwnProperty(req.params.userID.replace(':',''))){
+    if (userIDName.hasOwnProperty(req.params.userID)){
         resp.send(true);
     } else {
         resp.send(false);
     }
+})
+
+app.get('/profiles/:username', function(req, resp){
+    resp.send(profiles[req.params.username]);
 })
 
 app.post('/new', function(req, resp){
@@ -96,6 +101,21 @@ app.post('/addComment', function(req, resp){
     recipes[i].comments.push(newComment);
     fs.writeFile('recipes.json', JSON.stringify(recipes));
     resp.send("Recipe successfully added");
+})
+
+app.post('/createProfile', function(req, resp){
+    let userID = req.body.userID.toString();
+    let username = req.body.username;
+    userIDName[userID] = username;
+    let newProfile = {
+        "recipes": 0,
+        "creationDate": req.body.date,
+        "profilePicture": req.body.pictureURL
+    }
+    profiles[username] = newProfile;
+    fs.writeFile('userIDName.json', JSON.stringify(userIDName));
+    fs.writeFile('profiles.json', JSON.stringify(profiles));
+    resp.send("New profile created");
 })
 
 module.exports = app;

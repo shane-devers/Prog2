@@ -13,9 +13,12 @@ function checkLoginState() {
         if (response.status === 'connected') {
             getName();
             let response2 = await fetch('/userIDName/'+response.authResponse.userID);
-            console.log(response2.text());
-            if (response2.body == 'false'){
-                console.log(response.authResponse.userID);
+            let body = await response2.text(); //{"835566406777374":"user163"}
+            console.log(body);
+            if (body == 'false'){
+                document.getElementById('modals').innerHTML += '<div class="ui modal" id="profileModal"><div class="header">Create Profile</div><div class="content"><form class="ui form" method="POST" action="/createProfile" id="createProfile"><div class="field"><label>Username:</label><input type="text placeholder="Username" name="username" id="username"></div><div class="field"><label>Profile Picture</label><input type="file" name="profilePicture" id="profilePicture" accept="image/*"></div><div class="actions"><button class="ui green ok button" type="submit"><i class="checkmark icon"></i>OK</button><button class="ui red basic cancel button" type="button"><i class="remove icon"></i>Cancel</button></div></form></div>'
+                $(document).ready(function(){$('#profileModal').modal('show');})
+                $(document).ready(function(){document.getElementById('createProfile').addEventListener('submit', function(event){event.preventDefault(); createProfile(response.authResponse.userID);})});
             }
         }
     });
@@ -52,7 +55,7 @@ async function getResults(event, criteria, name) {
     } else if (criteria == 'ingredient') {
         query = name;
     }
-    let response = await fetch('/recipes/c/:'+criteria+'/v/:'+query);
+    let response = await fetch('/recipes/'+criteria+'/'+query);
     let body = await response.text();
     let recipes = JSON.parse(body);
     document.getElementById('recipes').innerHTML = '';
@@ -62,6 +65,10 @@ async function getResults(event, criteria, name) {
         document.getElementById('modals').innerHTML += '<div class="ui modal" id="modal'+i+'"></div>';
         $(document).ready(function(){document.getElementById(recipes[i].title).addEventListener('click', function(){createModal(recipes, i); $('#modal' + i).modal('show');});});
     }
+    let profileResponse = await fetch('/profiles/'+name);
+    let profileBody = await profileResponse.text();
+    let profile = JSON.parse(profileBody);
+    document.getElementById('title').innerHTML =name+"'s Recipes"+'<br><h3><div class="ui stackable three column grid"><div class="column"><img class="ui small image" src="'+profile.profilePicture+'"></div><div class="column">Recipes: '+profile.recipes+'</div><div class="column">Creation Date: '+profile.creationDate+'</div></div></h3>';
 }
 
 function createModal(recipes, i) {
@@ -79,7 +86,7 @@ function createModal(recipes, i) {
         newUnits.push(convertUnits(inSystem, unitSystem, value, unit));
     }
     document.getElementById('modal'+i).innerHTML = '<div class="header">'+recipes[i].title+'<br>Creator: <a href="#" id="creator'+i+'">' + recipes[i].creator + '</a></div><i class="close icon"></i><div class="scrolling content" id="scroll'+ i+'">';
-    $(document).ready(function(){document.getElementById('creator'+i).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator);document.getElementById('title').innerHTML = recipes[i].creator +"'s Recipes"; $('.ui.modal').modal('hide');});});
+    $(document).ready(function(){document.getElementById('creator'+i).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator); $('.ui.modal').modal('hide');});});
     let scroll = '<img class="ui medium image" src="'+recipes[i].thumbnail+'"><br><p><h3 class="ui dividing header">Ingredients</h3><ul>';
     for (let j = 0; j < recipes[i].ingredients.length; j++) {
         scroll += '<li><a id="' + recipes[i].title + '-' + j + '" href="#">' + newUnits[j] + ' ' + recipes[i].ingredients[j].ingredient + '</a><br></li>';
@@ -243,6 +250,27 @@ async function submitValues() {
         throw new Error('problem adding recipe' + response.code);
     }
     getResults(event, 'search');
+}
+
+async function createProfile(userID) {
+    let date = getDate();
+    let username = document.getElementById('username').value;
+    let profilePicture = document.getElementById('profilePicture').files[0];
+    let xhr = new XMLHttpRequest();
+    let fD = new FormData();
+    fD.append('image', profilePicture);
+    xhr.open('POST', '/uploadImage');
+    xhr.send(fD);
+    let response = await fetch('/createProfile', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'userID='+userID + '&username='+username + '&date=' + date + '&pictureURL=images/' + profilePicture.name.replace(' ','_')
+    });
+    if (!response.ok) {
+        throw new Error('problem adding recipe' + response.code);
+    }
 }
 
 $(document).ready(function(){document.getElementById('home').addEventListener('click', function(event) {getResults(event,'search'); document.getElementById('title').innerHTML = 'Newest Recipes';});});
