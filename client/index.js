@@ -8,17 +8,22 @@ window.fbAsyncInit = function() {
     checkLoginState();
 };
 
+let username = '';
+
 function checkLoginState() {
     FB.getLoginStatus(async function(response) {
         if (response.status === 'connected') {
             getName();
             let response2 = await fetch('/userIDName/'+response.authResponse.userID);
+            username = response.authResponse.userID;
             let body = await response2.text(); //{"835566406777374":"user163"}
             console.log(body);
             if (body == 'false'){
                 document.getElementById('modals').innerHTML += '<div class="ui modal" id="profileModal"><div class="header">Create Profile</div><div class="content"><form class="ui form" method="POST" action="/createProfile" id="createProfile"><div class="field"><label>Username:</label><input type="text placeholder="Username" name="username" id="username"></div><div class="field"><label>Profile Picture</label><input type="file" name="profilePicture" id="profilePicture" accept="image/*"></div><div class="actions"><button class="ui green ok button" type="submit"><i class="checkmark icon"></i>OK</button><button class="ui red basic cancel button" type="button"><i class="remove icon"></i>Cancel</button></div></form></div>'
                 $(document).ready(function(){$('#profileModal').modal('show');})
                 $(document).ready(function(){document.getElementById('createProfile').addEventListener('submit', function(event){event.preventDefault(); createProfile(response.authResponse.userID);})});
+            } else {
+                username = body;
             }
         }
     });
@@ -68,7 +73,7 @@ async function getResults(event, criteria, name) {
     let profileResponse = await fetch('/profiles/'+name);
     let profileBody = await profileResponse.text();
     let profile = JSON.parse(profileBody);
-    document.getElementById('title').innerHTML =name+"'s Recipes"+'<br><h3><div class="ui stackable three column grid"><div class="column"><img class="ui small image" src="'+profile.profilePicture+'"></div><div class="column">Recipes: '+profile.recipes+'</div><div class="column">Creation Date: '+profile.creationDate+'</div></div></h3>';
+    document.getElementById('title').innerHTML ='<div class="ui stackable two column grid"><div class="two wide column"><img class="ui small image" src="'+profile.profilePicture+'"></div><div class="column">'+name+"'s Recipes"+'</div></div><h3><div class="ui stackable two column grid"><div class="two wide column">Recipes: '+profile.recipes+'</div><div class="column">Creation Date: '+profile.creationDate+'</div></div></h3>';
 }
 
 function createModal(recipes, i) {
@@ -98,7 +103,8 @@ function createModal(recipes, i) {
     }
     scroll += '</ol></p><div class="ui comments"><h3 class="ui dividing header">Comments</h3>';
     for (let j = 0; j < recipes[i].comments.length; j++) {
-        scroll += '<div class="comment"><a class="avatar"></a><div class="content"><a class="author">'+recipes[i].comments[j].author+'</a><div class="metadata"><span class="date">'+recipes[i].comments[j].date+'</span></div><div class="text">'+recipes[i].comments[j].text+'</div><div class="actions"><a class="reply">Reply</a></div></div></div>';
+        scroll += '<div class="comment"><a class="avatar"></a><div class="content"><a class="author" id="'+i+'author'+j+'">'+recipes[i].comments[j].author+'</a><div class="metadata"><span class="date">'+recipes[i].comments[j].date+'</span></div><div class="text">'+recipes[i].comments[j].text+'</div><div class="actions"><a class="reply">Reply</a></div></div></div>';
+        $(document).ready(function(){document.getElementById(i+'author'+j).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator); $('.ui.modal').modal('hide');})});
     }
     scroll += '<form class="ui reply form" method="POST" action="/addComment" id="commentForm'+i+'"><div class="field"><textarea id="commentBox'+i+'"></textarea></div><button class="ui blue labeled submit icon button" type="submit"><i class="icon edit"></i>Add Comment</button></form><br><br></div></div>';
     document.getElementById('scroll'+i).innerHTML = scroll;
@@ -220,7 +226,7 @@ async function submitValues() {
     /*                 if (document.getElementById('Facebook').innerHTML.indexOf('fb-login') != -1){
         throw new Error('Please log in to add a new recipe!');
     } */
-    let creator = document.getElementById('Facebook').innerHTML;
+    let creator = username;
     let title = document.getElementById('RecipeTitle').value;
     let description = document.getElementById('RecipeDescription').value;
     let ingredients = [];

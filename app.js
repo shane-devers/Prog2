@@ -28,6 +28,10 @@ app.get('/recipes/:criteria/:value', function(req, resp){
     resp.send(outputRecipes);
 });
 
+app.get('/recipes/search', function(req, resp){
+    resp.send(recipes);
+});
+
 function matchesCriteria(recipe, criteria, value){
     if (criteria == 'search') {
         if (recipe.title.toUpperCase().includes(value.toUpperCase())){
@@ -54,7 +58,7 @@ function matchesCriteria(recipe, criteria, value){
 app.get('/userIDName/:userID', function(req, resp){
     console.log(req.params.userID);
     if (userIDName.hasOwnProperty(req.params.userID)){
-        resp.send(true);
+        resp.send(userIDName[req.params.userID]);
     } else {
         resp.send(false);
     }
@@ -77,7 +81,9 @@ app.post('/new', function(req, resp){
         "thumbnail" : req.body.thumbnail
     };
     recipes.push(newRecipe);
+    profiles[req.body.creator].recipes += 1;
     fs.writeFile('recipes.json', JSON.stringify(recipes));
+    fs.writeFile('profiles.json', JSON.stringify(profiles));
     resp.send("Recipe successfully added");
 });
 
