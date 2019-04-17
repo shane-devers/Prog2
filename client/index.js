@@ -66,7 +66,7 @@ async function getResults(event, criteria, name) {
     document.getElementById('modals').innerHTML = '';
     for (let i = recipes.length-1; i > -1; i--) {
         document.getElementById('recipes').innerHTML += '<div class="card" id="' + recipes[i].title + '"><div class="image"><img src=' + recipes[i].thumbnail + '></div><div class="content"><div class="header">' + recipes[i].title + '</div><div class="description">' + recipes[i].description + '</div></div><div class="extra content"><span class="right floated">' + recipes[i].date + '</span><span><i class="user icon"></i>' + recipes[i].creator + '</span></div></div>';
-        document.getElementById('modals').innerHTML += '<div class="ui modal" id="modal'+i+'"></div>';
+        document.getElementById('modals').innerHTML += '<div class="ui modal recipe" id="modal'+i+'"></div>';
         $(document).ready(function(){document.getElementById(recipes[i].title).addEventListener('click', function(){createModal(recipes, i); $('#modal' + i).modal('show');});});
     }
     let profileResponse = await fetch('/profiles/'+name);
@@ -90,11 +90,11 @@ function createModal(recipes, i) {
         newUnits.push(convertUnits(inSystem, unitSystem, value, unit));
     }
     document.getElementById('modal'+i).innerHTML = '<div class="header">'+recipes[i].title+'<br>Creator: <a href="#" id="creator'+i+'">' + recipes[i].creator + '</a></div><i class="close icon"></i><div class="scrolling content" id="scroll'+ i+'">';
-    $(document).ready(function(){document.getElementById('creator'+i).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator); $('.ui.modal').modal('hide'); $('.ui.dimmer.modals').remove();});});
+    $(document).ready(function(){document.getElementById('creator'+i).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator); $('.ui.modal').modal('hide'); $('.ui.modal.recipe.scrolling').remove();});});
     let scroll = '<img class="ui medium image" src="'+recipes[i].thumbnail+'"><br><p><h3 class="ui dividing header">Ingredients</h3><ul>';
     for (let j = 0; j < recipes[i].ingredients.length; j++) {
         scroll += '<li><a id="' + recipes[i].title + '-' + j + '" href="#">' + newUnits[j] + ' ' + recipes[i].ingredients[j].ingredient + '</a><br></li>';
-        $(document).ready(function(){document.getElementById(recipes[i].title + '-' + j).addEventListener('click', function(event){getResults(event,'ingredient',recipes[i].ingredients[j].ingredient); $('.ui.modal').modal('hide'); document.getElementById('title').innerHTML = 'Newest Recipes containing "' + recipes[i].ingredients[j].ingredient + '"'; $('.ui.dimmer.modals').remove();});});
+        $(document).ready(function(){document.getElementById(recipes[i].title + '-' + j).addEventListener('click', function(event){getResults(event,'ingredient',recipes[i].ingredients[j].ingredient); $('.ui.modal').modal('hide'); document.getElementById('title').innerHTML = 'Newest Recipes containing "' + recipes[i].ingredients[j].ingredient + '"'; $('.ui.modal.recipe.scrolling').remove();});});
     }
     scroll += '</ul></p><p><h3 class="ui dividing header">Directions</h3><ol>';
     for (let j = 0; j < recipes[i].directions.length; j++) {
@@ -103,7 +103,7 @@ function createModal(recipes, i) {
     scroll += '</ol></p><div class="ui comments"><h3 class="ui dividing header">Comments</h3>';
     for (let j = 0; j < recipes[i].comments.length; j++) {
         scroll += '<div class="comment"><a class="avatar"></a><div class="content"><a class="author" id="'+i+'author'+j+'">'+recipes[i].comments[j].author+'</a><div class="metadata"><span class="date">'+recipes[i].comments[j].date+'</span></div><div class="text">'+recipes[i].comments[j].text+'</div><div class="actions"><a class="reply">Reply</a></div></div></div>';
-        $(document).ready(function(){document.getElementById(i+'author'+j).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator); $('.ui.modal').modal('hide'); $('.ui.dimmer.modals').remove();})});
+        $(document).ready(function(){document.getElementById(i+'author'+j).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator); $('.ui.modal').modal('hide'); $('.ui.modal.recipe.scrolling').remove();})});
     }
     scroll += '<form class="ui reply form" method="POST" action="/addComment" id="commentForm'+i+'"><div class="field"><textarea id="commentBox'+i+'"></textarea></div><button class="ui blue labeled submit icon button" type="submit"><i class="icon edit"></i>Add Comment</button></form><br><br></div></div>';
     document.getElementById('scroll'+i).innerHTML = scroll;
