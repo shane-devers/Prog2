@@ -8,10 +8,23 @@ window.fbAsyncInit = function() {
     checkLoginState();
 };
 
+let username = '';
+
 function checkLoginState() {
-    FB.getLoginStatus(function(response) {
+    FB.getLoginStatus(async function(response) {
         if (response.status === 'connected') {
             getName();
+            let response2 = await fetch('/userIDName/'+response.authResponse.userID);
+            username = response.authResponse.userID;
+            let body = await response2.text(); //{"835566406777374":"user163"}
+            console.log(body);
+            if (body == 'false'){
+                document.getElementById('modals').innerHTML += '<div class="ui modal" id="profileModal"><div class="header">Create Profile</div><div class="content"><form class="ui form" method="POST" action="/createProfile" id="createProfile"><div class="field"><label>Username:</label><input type="text placeholder="Username" name="username" id="username"></div><div class="field"><label>Profile Picture</label><input type="file" name="profilePicture" id="profilePicture" accept="image/*"></div><div class="actions"><button class="ui green ok button" type="submit"><i class="checkmark icon"></i>OK</button><button class="ui red basic cancel button" type="button"><i class="remove icon"></i>Cancel</button></div></form></div>'
+                $(document).ready(function(){$('#profileModal').modal('show');})
+                $(document).ready(function(){document.getElementById('createProfile').addEventListener('submit', function(event){event.preventDefault(); createProfile(response.authResponse.userID);})});
+            } else {
+                username = body;
+            }
         }
     });
 }
@@ -30,7 +43,6 @@ document.addEventListener('DOMContentLoaded', async function(event){
     $(document).ready(function(){document.getElementById('NewBtn').addEventListener('click', function(){$('#newRecipe').modal('show');});});
     $('.ui.dropdown').dropdown();
     $('.ui.dropdown.unit').dropdown();
-    $('.ui.dropdown.unit').dropdown('setting', 'onChange', function(){getResults(event, 'search');});
 });
 
 $(document).ready(function(){document.getElementById('search').addEventListener('input', async function(event){
@@ -47,16 +59,20 @@ async function getResults(event, criteria, name) {
     } else if (criteria == 'ingredient') {
         query = name;
     }
-    let response = await fetch('/recipes/c/:'+criteria+'/v/:'+query);
+    let response = await fetch('/recipes/'+criteria+'/'+query);
     let body = await response.text();
     let recipes = JSON.parse(body);
     document.getElementById('recipes').innerHTML = '';
     document.getElementById('modals').innerHTML = '';
     for (let i = recipes.length-1; i > -1; i--) {
         document.getElementById('recipes').innerHTML += '<div class="card" id="' + recipes[i].title + '"><div class="image"><img src=' + recipes[i].thumbnail + '></div><div class="content"><div class="header">' + recipes[i].title + '</div><div class="description">' + recipes[i].description + '</div></div><div class="extra content"><span class="right floated">' + recipes[i].date + '</span><span><i class="user icon"></i>' + recipes[i].creator + '</span></div></div>';
-        document.getElementById('modals').innerHTML += '<div class="ui modal" id="modal'+i+'"></div>';
+        document.getElementById('modals').innerHTML += '<div class="ui modal recipe" id="modal'+i+'"></div>';
         $(document).ready(function(){document.getElementById(recipes[i].title).addEventListener('click', function(){createModal(recipes, i); $('#modal' + i).modal('show');});});
     }
+    let profileResponse = await fetch('/profiles/'+name);
+    let profileBody = await profileResponse.text();
+    let profile = JSON.parse(profileBody);
+    document.getElementById('title').innerHTML ='<div class="ui stackable two column grid"><div class="two wide column"><img class="ui small image" src="'+profile.profilePicture+'"></div><div class="column">'+name+"'s Recipes"+'</div></div><h3><div class="ui stackable two column grid"><div class="two wide column">Recipes: '+profile.recipes+'</div><div class="column">Creation Date: '+profile.creationDate+'</div></div></h3>';
 }
 
 function createModal(recipes, i) {
@@ -74,11 +90,11 @@ function createModal(recipes, i) {
         newUnits.push(convertUnits(inSystem, unitSystem, value, unit));
     }
     document.getElementById('modal'+i).innerHTML = '<div class="header">'+recipes[i].title+'<br>Creator: <a href="#" id="creator'+i+'">' + recipes[i].creator + '</a></div><i class="close icon"></i><div class="scrolling content" id="scroll'+ i+'">';
-    $(document).ready(function(){document.getElementById('creator'+i).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator);document.getElementById('title').innerHTML = recipes[i].creator +"'s Recipes"; $('.ui.modal').modal('hide');});});
+    $(document).ready(function(){document.getElementById('creator'+i).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator); $('.ui.modal').modal('hide'); $('.ui.modal.recipe.scrolling').remove();});});
     let scroll = '<img class="ui medium image" src="'+recipes[i].thumbnail+'"><br><p><h3 class="ui dividing header">Ingredients</h3><ul>';
     for (let j = 0; j < recipes[i].ingredients.length; j++) {
         scroll += '<li><a id="' + recipes[i].title + '-' + j + '" href="#">' + newUnits[j] + ' ' + recipes[i].ingredients[j].ingredient + '</a><br></li>';
-        $(document).ready(function(){document.getElementById(recipes[i].title + '-' + j).addEventListener('click', function(event){getResults(event,'ingredient',recipes[i].ingredients[j].ingredient); $('.ui.modal').modal('hide'); document.getElementById('title').innerHTML = 'Newest Recipes containing "' + recipes[i].ingredients[j].ingredient + '"';});});
+        $(document).ready(function(){document.getElementById(recipes[i].title + '-' + j).addEventListener('click', function(event){getResults(event,'ingredient',recipes[i].ingredients[j].ingredient); $('.ui.modal').modal('hide'); document.getElementById('title').innerHTML = 'Newest Recipes containing "' + recipes[i].ingredients[j].ingredient + '"'; $('.ui.modal.recipe.scrolling').remove();});});
     }
     scroll += '</ul></p><p><h3 class="ui dividing header">Directions</h3><ol>';
     for (let j = 0; j < recipes[i].directions.length; j++) {
@@ -86,7 +102,8 @@ function createModal(recipes, i) {
     }
     scroll += '</ol></p><div class="ui comments"><h3 class="ui dividing header">Comments</h3>';
     for (let j = 0; j < recipes[i].comments.length; j++) {
-        scroll += '<div class="comment"><a class="avatar"></a><div class="content"><a class="author">'+recipes[i].comments[j].author+'</a><div class="metadata"><span class="date">'+recipes[i].comments[j].date+'</span></div><div class="text">'+recipes[i].comments[j].text+'</div><div class="actions"><a class="reply">Reply</a></div></div></div>';
+        scroll += '<div class="comment"><a class="avatar"></a><div class="content"><a class="author" id="'+i+'author'+j+'">'+recipes[i].comments[j].author+'</a><div class="metadata"><span class="date">'+recipes[i].comments[j].date+'</span></div><div class="text">'+recipes[i].comments[j].text+'</div><div class="actions"><a class="reply">Reply</a></div></div></div>';
+        $(document).ready(function(){document.getElementById(i+'author'+j).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator); $('.ui.modal').modal('hide'); $('.ui.modal.recipe.scrolling').remove();})});
     }
     scroll += '<form class="ui reply form" method="POST" action="/addComment" id="commentForm'+i+'"><div class="field"><textarea id="commentBox'+i+'"></textarea></div><button class="ui blue labeled submit icon button" type="submit"><i class="icon edit"></i>Add Comment</button></form><br><br></div></div>';
     document.getElementById('scroll'+i).innerHTML = scroll;
@@ -208,7 +225,7 @@ async function submitValues() {
     /*                 if (document.getElementById('Facebook').innerHTML.indexOf('fb-login') != -1){
         throw new Error('Please log in to add a new recipe!');
     } */
-    let creator = document.getElementById('Facebook').innerHTML;
+    let creator = username;
     let title = document.getElementById('RecipeTitle').value;
     let description = document.getElementById('RecipeDescription').value;
     let ingredients = [];
@@ -238,6 +255,27 @@ async function submitValues() {
         throw new Error('problem adding recipe' + response.code);
     }
     getResults(event, 'search');
+}
+
+async function createProfile(userID) {
+    let date = getDate();
+    let username = document.getElementById('username').value;
+    let profilePicture = document.getElementById('profilePicture').files[0];
+    let xhr = new XMLHttpRequest();
+    let fD = new FormData();
+    fD.append('image', profilePicture);
+    xhr.open('POST', '/uploadImage');
+    xhr.send(fD);
+    let response = await fetch('/createProfile', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'userID='+userID + '&username='+username + '&date=' + date + '&pictureURL=images/' + profilePicture.name.replace(' ','_')
+    });
+    if (!response.ok) {
+        throw new Error('problem adding recipe' + response.code);
+    }
 }
 
 $(document).ready(function(){document.getElementById('home').addEventListener('click', function(event) {getResults(event,'search'); document.getElementById('title').innerHTML = 'Newest Recipes';});});
