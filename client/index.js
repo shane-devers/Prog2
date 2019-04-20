@@ -62,20 +62,22 @@ async function getResults(event, criteria, name) {
     let response = await fetch('/recipes/'+criteria+'/'+query);
     let body = await response.text();
     let recipes = JSON.parse(body);
+    let profileResponse = await fetch('/profiles');
+    let profileBody = await profileResponse.text();
+    let profile = JSON.parse(profileBody);
     document.getElementById('recipes').innerHTML = '';
     document.getElementById('modals').innerHTML = '';
     for (let i = recipes.length-1; i > -1; i--) {
         document.getElementById('recipes').innerHTML += '<div class="card" id="' + recipes[i].title + '"><div class="image"><img src=' + recipes[i].thumbnail + '></div><div class="content"><div class="header">' + recipes[i].title + '</div><div class="description">' + recipes[i].description + '</div></div><div class="extra content"><span class="right floated">' + recipes[i].date + '</span><span><i class="user icon"></i>' + recipes[i].creator + '</span></div></div>';
         document.getElementById('modals').innerHTML += '<div class="ui modal recipe" id="modal'+i+'"></div>';
-        $(document).ready(function(){document.getElementById(recipes[i].title).addEventListener('click', function(){createModal(recipes, i); $('#modal' + i).modal('show');});});
+        $(document).ready(function(){document.getElementById(recipes[i].title).addEventListener('click', function(){createModal(recipes, i, profile); $('#modal' + i).modal('show');});});
     }
-    let profileResponse = await fetch('/profiles/'+name);
-    let profileBody = await profileResponse.text();
-    let profile = JSON.parse(profileBody);
-    document.getElementById('title').innerHTML ='<div class="ui stackable two column grid"><div class="two wide column"><img class="ui small image" src="'+profile.profilePicture+'"></div><div class="column">'+name+"'s Recipes"+'</div></div><h3><div class="ui stackable two column grid"><div class="two wide column">Recipes: '+profile.recipes+'</div><div class="column">Creation Date: '+profile.creationDate+'</div></div></h3>';
+    if (criteria == 'name'){
+    document.getElementById('title').innerHTML ='<div class="ui stackable two column grid"><div class="two wide column"><img class="ui small image" src="'+profile[name].profilePicture+'"></div><div class="column">'+name+"'s Recipes"+'</div></div><h3><div class="ui stackable two column grid"><div class="two wide column">Recipes: '+profile[name].recipes+'</div><div class="column">Creation Date: '+profile[name].creationDate+'</div></div></h3>';
+    }
 }
 
-function createModal(recipes, i) {
+function createModal(recipes, i, profiles) {
     let unitSystem = $('.ui.dropdown.unit').dropdown('get value') || 'metric';//document.getElementById('unitSelect').innerText.replace(" ","");
     let newUnits = [];
     for (let j = 0; j < recipes[i].ingredients.length; j++) {
@@ -102,7 +104,7 @@ function createModal(recipes, i) {
     }
     scroll += '</ol></p><div class="ui comments"><h3 class="ui dividing header">Comments</h3>';
     for (let j = 0; j < recipes[i].comments.length; j++) {
-        scroll += '<div class="comment"><a class="avatar"></a><div class="content"><a class="author" id="'+i+'author'+j+'">'+recipes[i].comments[j].author+'</a><div class="metadata"><span class="date">'+recipes[i].comments[j].date+'</span></div><div class="text">'+recipes[i].comments[j].text+'</div><div class="actions"><a class="reply">Reply</a></div></div></div>';
+        scroll += '<div class="comment"><a class="avatar"><img src="'+profiles[recipes[i].creator].profilePicture+'"></a><div class="content"><a class="author" id="'+i+'author'+j+'">'+recipes[i].comments[j].author+'</a><div class="metadata"><span class="date">'+recipes[i].comments[j].date+'</span></div><div class="text">'+recipes[i].comments[j].text+'</div><div class="actions"><a class="reply">Reply</a></div></div></div>';
         $(document).ready(function(){document.getElementById(i+'author'+j).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator); $('.ui.modal').modal('hide'); $('.ui.modal.recipe.scrolling').remove();})});
     }
     scroll += '<form class="ui reply form" method="POST" action="/addComment" id="commentForm'+i+'"><div class="field"><textarea id="commentBox'+i+'"></textarea></div><button class="ui blue labeled submit icon button" type="submit"><i class="icon edit"></i>Add Comment</button></form><br><br></div></div>';

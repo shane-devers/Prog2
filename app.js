@@ -68,6 +68,10 @@ app.get('/profiles/:username', function(req, resp){
     resp.send(profiles[req.params.username]);
 })
 
+app.get('/profiles', function(req, resp){
+    resp.send(profiles);
+})
+
 app.post('/new', function(req, resp){
     let ingredients = JSON.parse(req.body.ingredients);
     let directions = req.body.directions.split('\n');
