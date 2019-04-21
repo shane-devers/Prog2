@@ -32,7 +32,7 @@ function checkLoginState() {
 function getName() {
     let name = '';
     FB.api('/me', function(response) {
-        document.getElementById('Facebook').innerHTML = response.name;
+        //document.getElementById('Facebook').innerHTML = response.name;
         return response.name;
     });
     return name;

@@ -8,6 +8,8 @@
         <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
         <script src="semantic/dist/semantic.min.js"></script>
         <script src="index.js"></script>
+        <script src="https://apis.google.com/js/platform.js" async defer></script>
+        <meta name="google-signin-client_id" content="452428121761-8c73rdae2ba89s8n47djk1t45aoabj35.apps.googleusercontent.com">
         <link rel="stylesheet" type="text/css" href="index.css">       
     </head>
     <body>
@@ -19,9 +21,10 @@
                 <a class="item">About</a>
                 <div class="right menu">
                     <div id="Facebook">
+                        <div class="g-signin2" data-onsuccess="onSignIn"></div>
                         <!--fb:login-button scope="public_profile,email" onlogin="checkLoginState();" size="medium">
-                        </fb:login-button-->
-                        <div class="fb-login-button" data-size="small" scope="public_profile,email" onlogin="checkLoginState();" data-button-type="login_with" data-auto-logout-link="false" data-use-continue-as="false"></div>
+                        </fb:login-button
+                        <div class="fb-login-button" data-size="small" scope="public_profile,email" onlogin="checkLoginState();" data-button-type="login_with" data-auto-logout-link="false" data-use-continue-as="false"></div-->
                     </div>
                 </div>
             </div>
