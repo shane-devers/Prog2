@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 var fs = require('file-system');
 var multer = require('multer');
 var upload = multer();
+const {OAuth2Client} = require('google-auth-library');
+const client = new OAuth2Client('845596870958-sjnd8u9h2togiqlj0e3r7ofg59lc23nr.apps.googleusercontent.com');
 
 app.use(express.static('client'));
 app.use(bodyParser.urlencoded({extended: true }));
@@ -98,7 +100,7 @@ app.post('/uploadImage', upload.single("image"), function(req, resp){
         console.log("File saved successfully!");
     });
     resp.send("Image uploaded!");
-})
+});
 
 app.post('/addComment', function(req, resp){
     console.log(req.body);
@@ -111,7 +113,7 @@ app.post('/addComment', function(req, resp){
     recipes[i].comments.push(newComment);
     fs.writeFile('recipes.json', JSON.stringify(recipes));
     resp.send("Recipe successfully added");
-})
+});
 
 app.post('/createProfile', function(req, resp){
     let userID = req.body.userID.toString();
@@ -126,6 +128,23 @@ app.post('/createProfile', function(req, resp){
     fs.writeFile('userIDName.json', JSON.stringify(userIDName));
     fs.writeFile('profiles.json', JSON.stringify(profiles));
     resp.send("New profile created");
-})
+});
+
+app.post('/tokenSignIn', function(req, resp) {
+    async function verify() {
+        const ticket = await client.verifyIdToken({
+            idToken: req.body.idtoken,
+            audience: '845596870958-sjnd8u9h2togiqlj0e3r7ofg59lc23nr.apps.googleusercontent.com',  // Specify the CLIENT_ID of the app that accesses the backend
+            // Or, if multiple clients access the backend:
+            //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+        });
+        const payload = ticket.getPayload();
+        const userid = payload['sub'];
+        // If request specified a G Suite domain:
+        //const domain = payload['hd'];
+    }
+    verify().catch(console.error);
+    resp.send('Someone');
+});
 
 module.exports = app;
