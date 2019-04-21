@@ -9,11 +9,12 @@ window.fbAsyncInit = function() {
 };
 
 let username = '';
+let profile = '';
 
 function checkLoginState() {
     FB.getLoginStatus(async function(response) {
         if (response.status === 'connected') {
-            getName();
+/*             getName();
             let response2 = await fetch('/userIDName/'+response.authResponse.userID);
             username = response.authResponse.userID;
             let body = await response2.text(); //{"835566406777374":"user163"}
@@ -24,10 +25,30 @@ function checkLoginState() {
                 $(document).ready(function(){document.getElementById('createProfile').addEventListener('submit', function(event){event.preventDefault(); createProfile(response.authResponse.userID);})});
             } else {
                 username = body;
-            }
+            } */
         }
     });
 }
+
+async function onSignIn(googleUser) {
+    profile = googleUser.getBasicProfile();
+    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+    console.log('Name: ' + profile.getName());
+    console.log('Image URL: ' + profile.getImageUrl());
+    console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+    let response2 = await fetch('/userIDName/'+profile.getId());
+    username = profile.getId();
+    let body = await response2.text(); //{"835566406777374":"user163"}
+    console.log(body);
+    if (body == 'false'){
+        document.getElementById('modals').innerHTML += '<div class="ui modal" id="profileModal"><div class="header">Create Profile</div><div class="content"><form class="ui form" method="POST" action="/createProfile" id="createProfile"><div class="field"><label>Username:</label><input type="text placeholder="Username" name="username" id="username"></div><div class="field"><label>Profile Picture</label><input type="file" name="profilePicture" id="profilePicture" accept="image/*"></div><div class="actions"><button class="ui green ok button" type="submit"><i class="checkmark icon"></i>OK</button><button class="ui red basic cancel button" type="button"><i class="remove icon"></i>Cancel</button></div></form></div>'
+        $(document).ready(function(){$('#profileModal').modal('show');})
+        $(document).ready(function(){document.getElementById('createProfile').addEventListener('submit', function(event){event.preventDefault(); createProfile(response.authResponse.userID);})});
+    } else {
+        username = body;
+    }
+}
+  
 
 function getName() {
     let name = '';
