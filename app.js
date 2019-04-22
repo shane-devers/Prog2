@@ -7,8 +7,7 @@ var bodyParser = require('body-parser');
 var fs = require('file-system');
 var multer = require('multer');
 var upload = multer();
-const {OAuth2Client} = require('google-auth-library');
-const client = new OAuth2Client('845596870958-sjnd8u9h2togiqlj0e3r7ofg59lc23nr.apps.googleusercontent.com');
+
 
 app.use(express.static('client'));
 app.use(bodyParser.urlencoded({extended: true }));
@@ -131,6 +130,8 @@ app.post('/createProfile', function(req, resp){
 });
 
 app.post('/tokenSignIn', function(req, resp) {
+    const {OAuth2Client} = require('google-auth-library');
+    const client = new OAuth2Client('845596870958-sjnd8u9h2togiqlj0e3r7ofg59lc23nr.apps.googleusercontent.com');
     async function verify() {
         const ticket = await client.verifyIdToken({
             idToken: req.body.idtoken,
@@ -140,6 +141,8 @@ app.post('/tokenSignIn', function(req, resp) {
         });
         const payload = ticket.getPayload();
         const userid = payload['sub'];
+        console.log(payload);
+        console.log("Userid"+userid);
         // If request specified a G Suite domain:
         //const domain = payload['hd'];
     }
