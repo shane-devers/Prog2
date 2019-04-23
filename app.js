@@ -66,7 +66,11 @@ app.get('/userIDName/:userID', function(req, resp){
 })
 
 app.get('/profiles/:username', function(req, resp){
+    if (userIDName.hasOwnProperty(req.params.username)) {
     resp.send(profiles[req.params.username]);
+    } else {
+        resp.send(false);
+    }
 })
 
 app.get('/profiles', function(req, resp){
@@ -74,6 +78,7 @@ app.get('/profiles', function(req, resp){
 })
 
 app.post('/new', function(req, resp){
+    console.log(req);
     let ingredients = JSON.parse(req.body.ingredients);
     let directions = req.body.directions.split('\n');
     let newRecipe = {
@@ -83,7 +88,8 @@ app.post('/new', function(req, resp){
         "description" : req.body.description,
         "ingredients" : ingredients,
         "directions" : directions,
-        "thumbnail" : req.body.thumbnail
+        "thumbnail" : req.body.thumbnail,
+        "comments" : []
     };
     recipes.push(newRecipe);
     profiles[req.body.creator].recipes += 1;
