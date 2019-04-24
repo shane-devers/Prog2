@@ -79,7 +79,7 @@ app.get('/profiles', function(req, resp){
 })
 
 app.post('/new', function(req, resp){
-    console.log(req);
+    console.log(directory);
     let ingredients = JSON.parse(req.body.ingredients);
     let directions = req.body.directions.split('\n');
     let newRecipe = {
