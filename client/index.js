@@ -163,7 +163,7 @@ async function addComment(event, i) {
         body: 'date=' + date + '&author=' + creator + '&text=' + text + '&recipe=' + i
     });
     if (!response.ok) {
-        throw new Error('problem adding recipe' + response.code);
+        throw new Error('problem adding comment' + response.code);
     }
 }
 

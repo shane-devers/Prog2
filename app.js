@@ -117,7 +117,7 @@ app.post('/addComment', function(req, resp){
     }
     recipes[i].comments.push(newComment);
     fs.writeFile('recipes.json', JSON.stringify(recipes));
-    resp.send("Recipe successfully added");
+    resp.send("Comment successfully added");
 });
 
 app.post('/createProfile', function(req, resp){
