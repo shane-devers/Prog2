@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var fs = require('file-system');
 var multer = require('multer');
 var upload = multer();
+var directory = process.env.OPENSHIFT_DATA_DIR || '';
 
 
 app.use(express.static('client'));
@@ -93,14 +94,14 @@ app.post('/new', function(req, resp){
     };
     recipes.push(newRecipe);
     profiles[req.body.creator].recipes += 1;
-    fs.writeFile('recipes.json', JSON.stringify(recipes));
-    fs.writeFile('profiles.json', JSON.stringify(profiles));
+    fs.writeFile(directory + 'recipes.json', JSON.stringify(recipes));
+    fs.writeFile(directory + 'profiles.json', JSON.stringify(profiles));
     resp.send("Recipe successfully added");
 });
 
 app.post('/uploadImage', upload.single("image"), function(req, resp){
     let img = req.file;
-    fs.writeFile('client/images/'+img.originalname.replace(" ","_"), img.buffer, 'ascii', (err) => {
+    fs.writeFile(directory+'client/images/'+img.originalname.replace(" ","_"), img.buffer, 'ascii', (err) => {
         if (err) throw err;
         console.log("File saved successfully!");
     });
@@ -116,7 +117,7 @@ app.post('/addComment', function(req, resp){
         "text": req.body.text
     }
     recipes[i].comments.push(newComment);
-    fs.writeFile('recipes.json', JSON.stringify(recipes));
+    fs.writeFile(directory+'recipes.json', JSON.stringify(recipes));
     resp.send("Comment successfully added");
 });
 
@@ -130,8 +131,8 @@ app.post('/createProfile', function(req, resp){
         "profilePicture": req.body.pictureURL
     }
     profiles[username] = newProfile;
-    fs.writeFile('userIDName.json', JSON.stringify(userIDName));
-    fs.writeFile('profiles.json', JSON.stringify(profiles));
+    fs.writeFile(directory+'userIDName.json', JSON.stringify(userIDName));
+    fs.writeFile(directory+'profiles.json', JSON.stringify(profiles));
     resp.send("New profile created");
 });
 
