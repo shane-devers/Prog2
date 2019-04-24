@@ -273,6 +273,7 @@ async function submitValues() {
     let xhr = new XMLHttpRequest();
     let fD = new FormData();
     fD.append('image', thumbnail);
+    console.log('Gets to the poin just before image upload');
     xhr.open('POST', '/uploadImage');
     xhr.send(fD);
     let response = await fetch('/new', {
