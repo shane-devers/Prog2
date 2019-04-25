@@ -238,7 +238,8 @@ function convertUnits(input, output, value, unit){
 
 $(document).ready(function(){document.getElementById('addRecipe').addEventListener('submit', async function(event){
     event.preventDefault();
-    try {
+    submitValues();
+/*     try {
         FB.getLoginStatus(function(response){
             if (response.status === 'connected') {
                 submitValues();
@@ -248,7 +249,7 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
         });
     } catch (error) {
         alert(error);
-    }
+    } */
 });});
 
 async function submitValues() {
