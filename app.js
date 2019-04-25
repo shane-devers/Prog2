@@ -102,7 +102,7 @@ app.post('/new', function(req, resp){
 app.post('/uploadImage', upload.single("image"), function(req, resp){
     console.log(directory);
     let img = req.file;
-    fs.writeFile(directory+'client/images/'+img.originalname.replaceAll(" ","_"), img.buffer, 'ascii', (err) => {
+    fs.writeFile(directory+'client/images/'+img.originalname.replace(/ /g,"_"), img.buffer, 'ascii', (err) => {
         if (err) throw err;
         console.log("File saved successfully!");
     });

@@ -304,7 +304,7 @@ async function createProfile(userID) {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: 'userID='+userID + '&username='+username + '&date=' + date + '&pictureURL=images/' + profilePicture.name.replaceAll(' ','_')
+        body: 'userID='+userID + '&username='+username + '&date=' + date + '&pictureURL=images/' + profilePicture.name.replace(/ /g,'_')
     });
     if (!response.ok) {
         throw new Error('problem adding recipe' + response.code);
