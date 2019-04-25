@@ -282,7 +282,7 @@ async function submitValues() {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: 'date=' + date + '&creator=' + creator + '&title=' + title + '&description=' + description + '&ingredients=' + JSON.stringify(ingredients) + '&directions=' + directions + '&thumbnail=images/' + thumbnail.name
+        body: 'date=' + date + '&creator=' + creator + '&title=' + title + '&description=' + description + '&ingredients=' + JSON.stringify(ingredients) + '&directions=' + directions + '&thumbnail=images/' + thumbnail.name.replace(/ /g,'_')
     });
     if (!response.ok) {
         throw new Error('problem adding recipe' + response.code);
