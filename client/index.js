@@ -1,4 +1,4 @@
-window.fbAsyncInit = function() {
+/* window.fbAsyncInit = function() {
     FB.init({
         appId            : 400507017396771,
         autoLogAppEvents : true,
@@ -6,15 +6,16 @@ window.fbAsyncInit = function() {
         version          : 'v3.2'
     });
     checkLoginState();
-};
+}; */
 
 let username = '';
 let profile = '';
-
+let id_token = '';
+/* 
 function checkLoginState() {
     FB.getLoginStatus(async function(response) {
         if (response.status === 'connected') {
-/*             getName();
+             getName();
             let response2 = await fetch('/userIDName/'+response.authResponse.userID);
             username = response.authResponse.userID;
             let body = await response2.text(); //{"835566406777374":"user163"}
@@ -25,13 +26,13 @@ function checkLoginState() {
                 $(document).ready(function(){document.getElementById('createProfile').addEventListener('submit', function(event){event.preventDefault(); createProfile(response.authResponse.userID);})});
             } else {
                 username = body;
-            } */
+            } 
         }
     });
-}
+} */
 
 async function onSignIn(googleUser) {
-    let id_token = googleUser.getAuthResponse().id_token;
+    id_token = googleUser.getAuthResponse().id_token;
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/tokenSignIn');
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -57,15 +58,14 @@ async function onSignIn(googleUser) {
     }
 }
   
-
-function getName() {
+/* function getName() {
     let name = '';
     FB.api('/me', function(response) {
         //document.getElementById('Facebook').innerHTML = response.name;
         return response.name;
     });
     return name;
-}
+} */
 
 document.addEventListener('DOMContentLoaded', async function(event){
     getResults(event, 'search');
@@ -79,30 +79,34 @@ $(document).ready(function(){document.getElementById('search').addEventListener(
 });});
 
 async function getResults(event, criteria, name) {
-    let query = '';
-    if (criteria == 'search'){
-        document.getElementById('title').innerHTML = 'Newest Recipes';
-        query = document.getElementById('search').value;
-    } else if (criteria == 'name') {
-        query = name;
-    } else if (criteria == 'ingredient') {
-        query = name;
-    }
-    let response = await fetch('/recipes/'+criteria+'/'+query);
-    let body = await response.text();
-    let recipes = JSON.parse(body);
-    let profileResponse = await fetch('/profiles');
-    let profileBody = await profileResponse.text();
-    let profile = JSON.parse(profileBody);
-    document.getElementById('recipes').innerHTML = '';
-    document.getElementById('modals').innerHTML = '';
-    for (let i = recipes.length-1; i > -1; i--) {
-        document.getElementById('recipes').innerHTML += '<div class="card" id="' + recipes[i].title + '"><div class="image"><img src=' + recipes[i].thumbnail + '></div><div class="content"><div class="header">' + recipes[i].title + '</div><div class="description">' + recipes[i].description + '</div></div><div class="extra content"><span class="right floated">' + recipes[i].date + '</span><span><i class="user icon"></i>' + recipes[i].creator + '</span></div></div>';
-        document.getElementById('modals').innerHTML += '<div class="ui modal recipe" id="modal'+i+'"></div>';
-        $(document).ready(function(){document.getElementById(recipes[i].title).addEventListener('click', function(){createModal(recipes, i, profile); $('#modal' + i).modal('show');});});
-    }
-    if (criteria == 'name'){
-    document.getElementById('title').innerHTML ='<div class="ui stackable two column grid"><div class="two wide column"><img class="ui small image" src="'+profile[name].profilePicture+'"></div><div class="column">'+name+"'s Recipes"+'</div></div><h3><div class="ui stackable two column grid"><div class="two wide column">Recipes: '+profile[name].recipes+'</div><div class="column">Creation Date: '+profile[name].creationDate+'</div></div></h3>';
+    try {
+        let query = '';
+        if (criteria == 'search'){
+            document.getElementById('title').innerHTML = 'Newest Recipes';
+            query = document.getElementById('search').value;
+        } else if (criteria == 'name') {
+            query = name;
+        } else if (criteria == 'ingredient') {
+            query = name;
+        }
+        let response = await fetch('/recipes/'+criteria+'/'+query);
+        let body = await response.text();
+        let recipes = JSON.parse(body);
+        let profileResponse = await fetch('/profiles');
+        let profileBody = await profileResponse.text();
+        let profile = JSON.parse(profileBody);
+        document.getElementById('recipes').innerHTML = '';
+        document.getElementById('modals').innerHTML = '';
+        for (let i = recipes.length-1; i > -1; i--) {
+            document.getElementById('recipes').innerHTML += '<div class="card" id="' + recipes[i].title + '"><div class="image"><img src=' + recipes[i].thumbnail + '></div><div class="content"><div class="header">' + recipes[i].title + '</div><div class="description">' + recipes[i].description + '</div></div><div class="extra content"><span class="right floated">' + recipes[i].date + '</span><span><i class="user icon"></i>' + recipes[i].creator + '</span></div></div>';
+            document.getElementById('modals').innerHTML += '<div class="ui modal recipe" id="modal'+i+'"></div>';
+            $(document).ready(function(){document.getElementById(recipes[i].title).addEventListener('click', function(){createModal(recipes, i, profile); $('#modal' + i).modal('show');});});
+        }
+        if (criteria == 'name'){
+        document.getElementById('title').innerHTML ='<div class="ui stackable two column grid"><div class="two wide column"><img class="ui small image" src="'+profile[name].profilePicture+'"></div><div class="column">'+name+"'s Recipes"+'</div></div><h3><div class="ui stackable two column grid"><div class="two wide column">Recipes: '+profile[name].recipes+'</div><div class="column">Creation Date: '+profile[name].creationDate+'</div></div></h3>';
+        }
+    } catch (error) {
+        alert("There was an error! Please try again later!");
     }
 }
 
@@ -253,41 +257,55 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
 });});
 
 async function submitValues() {
-    let date = getDate();
-    /*                 if (document.getElementById('Facebook').innerHTML.indexOf('fb-login') != -1){
-        throw new Error('Please log in to add a new recipe!');
-    } */
-    let creator = username;
-    let title = document.getElementById('RecipeTitle').value;
-    let description = document.getElementById('RecipeDescription').value;
-    let ingredients = [];
-    for (let i = 0; i < document.getElementsByClassName('ui dropdown label').length-1; i++) {
-        let newIngredient = {
-            'quantity': document.getElementById('Quantity'+i).value,
-            'unit': document.getElementById('Unit'+i).innerText,
-            'ingredient': document.getElementById('Ingredient'+i).value
-        };
-        ingredients.push(newIngredient);
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/tokenSignIn');
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        console.log('Signed in as: ' + xhr.responseText);
+    };
+    xhr.send('idtoken=' + id_token);
+    xhr.onreadystatechange = async function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+            if (xhr.responseText == "Someone"){
+                let date = getDate();
+                /*                 if (document.getElementById('Facebook').innerHTML.indexOf('fb-login') != -1){
+                    throw new Error('Please log in to add a new recipe!');
+                } */
+                let creator = username;
+                let title = document.getElementById('RecipeTitle').value;
+                let description = document.getElementById('RecipeDescription').value;
+                let ingredients = [];
+                for (let i = 0; i < document.getElementsByClassName('ui dropdown label').length-1; i++) {
+                    let newIngredient = {
+                        'quantity': document.getElementById('Quantity'+i).value,
+                        'unit': document.getElementById('Unit'+i).innerText,
+                        'ingredient': document.getElementById('Ingredient'+i).value
+                    };
+                    ingredients.push(newIngredient);
+                }
+                let directions = document.getElementById('RecipeDirections').value;
+                let thumbnail = document.getElementById('RecipeThumbnail').files[0];
+                let xhr = new XMLHttpRequest();
+                let fD = new FormData();
+                fD.append('image', thumbnail);
+                console.log('Gets to the poin just before image upload');
+                xhr.open('POST', '/uploadImage');
+                xhr.send(fD);
+                let response = await fetch('/new', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'date=' + date + '&creator=' + creator + '&title=' + title + '&description=' + description + '&ingredients=' + JSON.stringify(ingredients) + '&directions=' + directions + '&thumbnail=images/' + thumbnail.name.replace(/ /g,'_')
+                });
+                if (!response.ok) {
+                    throw new Error('problem adding recipe' + response.code);
+                }
+                getResults(event, 'search');
+            }
+        }
     }
-    let directions = document.getElementById('RecipeDirections').value;
-    let thumbnail = document.getElementById('RecipeThumbnail').files[0];
-    let xhr = new XMLHttpRequest();
-    let fD = new FormData();
-    fD.append('image', thumbnail);
-    console.log('Gets to the poin just before image upload');
-    xhr.open('POST', '/uploadImage');
-    xhr.send(fD);
-    let response = await fetch('/new', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: 'date=' + date + '&creator=' + creator + '&title=' + title + '&description=' + description + '&ingredients=' + JSON.stringify(ingredients) + '&directions=' + directions + '&thumbnail=images/' + thumbnail.name.replace(/ /g,'_')
-    });
-    if (!response.ok) {
-        throw new Error('problem adding recipe' + response.code);
-    }
-    getResults(event, 'search');
+
 }
 
 async function createProfile(userID) {
