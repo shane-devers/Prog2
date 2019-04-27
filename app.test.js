@@ -98,4 +98,17 @@ describe("Test recipes service", () => {
         .send(toSend)
         .expect("New profile created");
     });
+
+/*     test("Create new profile without all required data values", async() => {
+        const toSend = {
+            "userID":"01285239523234",
+            "date":"27 April 2019",
+            "pictureURL":"http://clipart-library.com/images/BTaKbqGEc.png"
+        }
+        const response = await request(app)
+        .post('/createProfile')
+        .type('form')
+        .send(toSend);
+        expect(response.statusCode).toBe(400);
+    }); */
 });

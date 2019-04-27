@@ -50,9 +50,9 @@ async function onSignIn(googleUser) {
     let body = await response2.text(); //{"835566406777374":"user163"}
     console.log(body);
     if (body == 'false'){
-        document.getElementById('modals').innerHTML += '<div class="ui modal" id="profileModal"><div class="header">Create Profile</div><div class="content"><form class="ui form" method="POST" action="/createProfile" id="createProfile"><div class="field"><label>Username:</label><input type="text placeholder="Username" name="username" id="username"></div><div class="field"><label>Profile Picture</label><input type="file" name="profilePicture" id="profilePicture" accept="image/*"></div><div class="actions"><button class="ui green ok button" type="submit"><i class="checkmark icon"></i>OK</button><button class="ui red basic cancel button" type="button"><i class="remove icon"></i>Cancel</button></div></form></div>'
-        $(document).ready(function(){$('#profileModal').modal('show');})
-        $(document).ready(function(){document.getElementById('createProfile').addEventListener('submit', function(event){event.preventDefault(); createProfile(response.authResponse.userID);})});
+        document.getElementById('modals').innerHTML += '<div class="ui modal" id="profileModal"><div class="header">Create Profile</div><div class="content"><form class="ui form" method="POST" action="/createProfile" id="createProfile"><div class="field"><label>Username:</label><input type="text placeholder="Username" name="username" id="username"></div><div class="field"><label>Profile Picture</label><input type="file" name="profilePicture" id="profilePicture" accept="image/*"></div><div class="actions"><button class="ui green ok button" type="submit"><i class="checkmark icon"></i>OK</button><button class="ui red basic cancel button" type="button"><i class="remove icon"></i>Cancel</button></div></form></div>';
+        $(document).ready(function(){$('#profileModal').modal('show');});
+        $(document).ready(function(){document.getElementById('createProfile').addEventListener('submit', function(event){event.preventDefault(); createProfile(username);});});
     } else {
         username = body;
     }
@@ -103,10 +103,10 @@ async function getResults(event, criteria, name) {
             $(document).ready(function(){document.getElementById(recipes[i].title).addEventListener('click', function(){createModal(recipes, i, profile); $('#modal' + i).modal('show');});});
         }
         if (criteria == 'name'){
-        document.getElementById('title').innerHTML ='<div class="ui stackable two column grid"><div class="two wide column"><img class="ui small image" src="'+profile[name].profilePicture+'"></div><div class="column">'+name+"'s Recipes"+'</div></div><h3><div class="ui stackable two column grid"><div class="two wide column">Recipes: '+profile[name].recipes+'</div><div class="column">Creation Date: '+profile[name].creationDate+'</div></div></h3>';
+            document.getElementById('title').innerHTML ='<div class="ui stackable two column grid"><div class="two wide column"><img class="ui small image" src="'+profile[name].profilePicture+'"></div><div class="column">'+name+'\'s Recipes</div></div><h3><div class="ui stackable two column grid"><div class="two wide column">Recipes: '+profile[name].recipes+'</div><div class="column">Creation Date: '+profile[name].creationDate+'</div></div></h3>';
         }
     } catch (error) {
-        alert("There was an error! Please try again later!");
+        alert('There was an error! Please try again later!');
     }
 }
 
@@ -138,11 +138,11 @@ function createModal(recipes, i, profiles) {
     scroll += '</ol></p><div class="ui comments"><h3 class="ui dividing header">Comments</h3>';
     for (let j = 0; j < recipes[i].comments.length; j++) {
         scroll += '<div class="comment"><a class="avatar"><img src="'+profiles[recipes[i].creator].profilePicture+'"></a><div class="content"><a class="author" id="'+i+'author'+j+'">'+recipes[i].comments[j].author+'</a><div class="metadata"><span class="date">'+recipes[i].comments[j].date+'</span></div><div class="text">'+recipes[i].comments[j].text+'</div><div class="actions"><a class="reply">Reply</a></div></div></div>';
-        $(document).ready(function(){document.getElementById(i+'author'+j).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator); $('.ui.modal').modal('hide'); $('.ui.modal.recipe.scrolling').remove();})});
+        $(document).ready(function(){document.getElementById(i+'author'+j).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator); $('.ui.modal').modal('hide'); $('.ui.modal.recipe.scrolling').remove();});});
     }
     scroll += '<form class="ui reply form" method="POST" action="/addComment" id="commentForm'+i+'"><div class="field"><textarea id="commentBox'+i+'"></textarea></div><button class="ui blue labeled submit icon button" type="submit"><i class="icon edit"></i>Add Comment</button></form><br><br></div></div>';
     document.getElementById('scroll'+i).innerHTML = scroll;
-    $(document).ready(function(){document.getElementById('commentForm'+i).addEventListener('submit', function(event){addComment(event, i);})});
+    $(document).ready(function(){document.getElementById('commentForm'+i).addEventListener('submit', function(event){addComment(event, i);});});
 }
 
 async function addComment(event, i) {
@@ -266,7 +266,7 @@ async function submitValues() {
     xhr.send('idtoken=' + id_token);
     xhr.onreadystatechange = async function() {
         if (xhr.readyState == XMLHttpRequest.DONE) {
-            if (xhr.responseText == "Someone"){
+            if (xhr.responseText == 'Someone'){
                 let date = getDate();
                 /*                 if (document.getElementById('Facebook').innerHTML.indexOf('fb-login') != -1){
                     throw new Error('Please log in to add a new recipe!');
@@ -304,8 +304,7 @@ async function submitValues() {
                 getResults(event, 'search');
             }
         }
-    }
-
+    };
 }
 
 async function createProfile(userID) {
@@ -334,17 +333,17 @@ $(document).ready(function(){document.getElementById('home').addEventListener('c
 //$(document).ready(function(){document.getElementById('dropdown').addEventListener('click', function(event) {$('.ui.dropdown').dropdown();})});
 
 $(document).ready(function(){document.getElementById('AddIngredient').addEventListener('click', function(){let i = document.getElementsByClassName('ui dropdown label').length - 1; 
-let contents = [];
-for (let j = 0; j < i; j++) {
-    let newItem = {
-        'quantity': document.getElementById('Quantity'+j).value,
-        'ingredient': document.getElementById('Ingredient'+j).value
+    let contents = [];
+    for (let j = 0; j < i; j++) {
+        let newItem = {
+            'quantity': document.getElementById('Quantity'+j).value,
+            'ingredient': document.getElementById('Ingredient'+j).value
+        };
+        contents.push(newItem);
     }
-    contents.push(newItem);
-}
-document.getElementById('IngredientField').innerHTML += '<div class="left floated eight wide column"><div class="ui right labeled input" id="Unit'+i+'"><input type="text" placeholder="Quantity" id="Quantity'+i+'"><div class="ui dropdown label" id="dropdown' + i + '"><div class="text">No Units</div><i class="dropdown icon"></i><div class="menu"><div class="item">No Units</div><div class="item">g</div><div class="item">kg</div><div class="item">oz</div><div class="item">lb</div><div class="item">ml</div><div class="item">l</div><div class="item">fl oz</div><div class="item">cups</div><div class="item">tsp</div><div class="item">tbsp</div></div></div></div></div><div class="right floated eight wide column"><div class="ui input"><input type="text" placeholder="Ingredient" id="Ingredient'+i+'"></div></div>';$('.ui.dropdown').dropdown();
-for (let j = 0; j < i; j++) {
-    document.getElementById('Quantity'+j).value = contents[j].quantity;
-    document.getElementById('Ingredient'+j).value = contents[j].ingredient;
-}
+    document.getElementById('IngredientField').innerHTML += '<div class="left floated eight wide column"><div class="ui right labeled input" id="Unit'+i+'"><input type="text" placeholder="Quantity" id="Quantity'+i+'"><div class="ui dropdown label" id="dropdown' + i + '"><div class="text">No Units</div><i class="dropdown icon"></i><div class="menu"><div class="item">No Units</div><div class="item">g</div><div class="item">kg</div><div class="item">oz</div><div class="item">lb</div><div class="item">ml</div><div class="item">l</div><div class="item">fl oz</div><div class="item">cups</div><div class="item">tsp</div><div class="item">tbsp</div></div></div></div></div><div class="right floated eight wide column"><div class="ui input"><input type="text" placeholder="Ingredient" id="Ingredient'+i+'"></div></div>';$('.ui.dropdown').dropdown();
+    for (let j = 0; j < i; j++) {
+        document.getElementById('Quantity'+j).value = contents[j].quantity;
+        document.getElementById('Ingredient'+j).value = contents[j].ingredient;
+    }
 });}); //document.getElementById('dropdown'+i).addEventListener('click', function() {$('.ui.dropdown').dropdown();
