@@ -288,7 +288,6 @@ async function submitValues() {
                 let xhr = new XMLHttpRequest();
                 let fD = new FormData();
                 fD.append('image', thumbnail);
-                console.log('Gets to the poin just before image upload');
                 xhr.open('POST', '/uploadImage');
                 xhr.send(fD);
                 let response = await fetch('/new', {
@@ -296,7 +295,7 @@ async function submitValues() {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    body: 'date=' + date + '&creator=' + creator + '&title=' + title + '&description=' + description + '&ingredients=' + JSON.stringify(ingredients) + '&directions=' + directions + '&thumbnail=images/' + thumbnail.name.replace(/ /g,'_')
+                    body: 'date=' + date + '&creator=' + creator + '&title=' + title + '&description=' + description + '&ingredients=' + JSON.stringify(ingredients) + '&directions=' + directions + '&thumbnail=images/' + thumbnail.name.replace(/ /g,'_') + '&idtoken=' + id_token
                 });
                 if (!response.ok) {
                     throw new Error('problem adding recipe' + response.code);
