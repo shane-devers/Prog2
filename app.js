@@ -91,26 +91,37 @@ app.get('/profiles', function(req, resp){
 
 app.post('/new', async function(req, resp){
     console.log(directory);
-    if (tokenSignIn(req)){
+    if (await tokenSignIn(req)){
         if (req.body.hasOwnProperty('ingredients') && req.body.hasOwnProperty('directions') && req.body.hasOwnProperty('date') && req.body.hasOwnProperty('creator') && req.body.hasOwnProperty('title') && req.body.hasOwnProperty('description') && req.body.hasOwnProperty('thumbnail')){
-            let ingredients = JSON.parse(req.body.ingredients);
-            let directions = req.body.directions.split('\n');
-            let newRecipe = {
-                "date" : req.body.date,
-                "creator" : req.body.creator,
-                "title" : req.body.title,
-                "description" : req.body.description,
-                "ingredients" : ingredients,
-                "directions" : directions,
-                "thumbnail" : req.body.thumbnail,
-                "comments" : []
-            };
-            recipes.push(newRecipe);
-            profiles[req.body.creator].recipes += 1;
-            //fs.writeFile(directory + 'recipes.json', JSON.stringify(recipes));
-            //fs.writeFile(directory + 'profiles.json', JSON.stringify(profiles));
-            resp.status(201);
-            resp.send('Recipe successfully added');
+            if (req.body.ingredients != '' && req.body.directions != '' && req.body.date != '' && req.body.creator != '' && req.body.title != '' && req.body.description != '' && req.body.thumbnail != '') {
+                let ingredients = '';
+                try {
+                    ingredients = JSON.parse(req.body.ingredients);
+                } catch(e) {
+                    resp.status(400);
+                    resp.send('Ingredients is not a valid JSON string');
+                }
+                let directions = req.body.directions.split('\n');
+                let newRecipe = {
+                    "date" : req.body.date,
+                    "creator" : req.body.creator,
+                    "title" : req.body.title,
+                    "description" : req.body.description,
+                    "ingredients" : ingredients,
+                    "directions" : directions,
+                    "thumbnail" : req.body.thumbnail,
+                    "comments" : []
+                };
+                recipes.push(newRecipe);
+                profiles[req.body.creator].recipes += 1;
+                fs.writeFile(directory + 'recipes.json', JSON.stringify(recipes));
+                fs.writeFile(directory + 'profiles.json', JSON.stringify(profiles));
+                resp.status(201);
+                resp.send('Recipe successfully added');
+            } else {
+                resp.status(400);
+                resp.send('All recipe properties must have a value!');
+            }
         } else {
             resp.status(400);
             resp.send('The JSON sent did not contain all of the required fields');
@@ -121,14 +132,14 @@ app.post('/new', async function(req, resp){
     }
 });
 
-app.post('/uploadImage', upload.single('image'), function(req, resp){
-    if (tokenSignIn(req)){
+app.post('/uploadImage', upload.single('image'), async function(req, resp){
+    if (await tokenSignIn(req)){
         console.log(directory);
         let img = req.file;
-        //fs.writeFile(directory+'client/images/'+img.originalname.replace(/ /g,'_'), img.buffer, 'ascii', (err) => {
-        //     if (err) throw err;
-        //     console.log('File saved successfully!');
-        // });
+        fs.writeFile(directory+'client/images/'+img.originalname.replace(/ /g,'_'), img.buffer, 'ascii', (err) => {
+             if (err) throw err;
+             console.log('File saved successfully!');
+        });
         resp.status(201);
         resp.send('Image uploaded!');
     } else {
@@ -137,9 +148,9 @@ app.post('/uploadImage', upload.single('image'), function(req, resp){
     }
 });
 
-app.post('/addComment', function(req, resp){
+app.post('/addComment', async function(req, resp){
     console.log(req.body);
-    if (tokenSignIn(req)){
+    if (await tokenSignIn(req)){
         if (req.body.hasOwnProperty('author') && req.body.hasOwnProperty('date') && req.body.hasOwnProperty('text')){
             let i = req.body.recipe;
             let newComment = {
@@ -172,8 +183,8 @@ app.post('/createProfile', function(req, resp){
             "profilePicture": req.body.pictureURL
         };
         profiles[username] = newProfile;
-        //fs.writeFile(directory+'userIDName.json', JSON.stringify(userIDName));
-        //fs.writeFile(directory+'profiles.json', JSON.stringify(profiles));
+        fs.writeFile(directory+'userIDName.json', JSON.stringify(userIDName));
+        fs.writeFile(directory+'profiles.json', JSON.stringify(profiles));
         resp.status(201);
         resp.send('New profile created');
     } else {
@@ -185,30 +196,30 @@ app.post('/createProfile', function(req, resp){
 async function tokenSignIn(req){
     const {OAuth2Client} = require('google-auth-library');
     const client = new OAuth2Client('845596870958-sjnd8u9h2togiqlj0e3r7ofg59lc23nr.apps.googleusercontent.com');
+    async function verify() {
+        const ticket = await client.verifyIdToken({
+            idToken: req.body.idtoken,
+            audience: '845596870958-sjnd8u9h2togiqlj0e3r7ofg59lc23nr.apps.googleusercontent.com',  // Specify the CLIENT_ID of the app that accesses the backend
+            // Or, if multiple clients access the backend:
+            //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+        });
+        const payload = ticket.getPayload();
+        const userid = payload['sub'];
+        console.log(payload);
+        console.log('Userid'+userid);
+        // If request specified a G Suite domain:
+        //const domain = payload['hd'];
+    }
     try {
-        async function verify() {
-            const ticket = await client.verifyIdToken({
-                idToken: req.body.idtoken,
-                audience: '845596870958-sjnd8u9h2togiqlj0e3r7ofg59lc23nr.apps.googleusercontent.com',  // Specify the CLIENT_ID of the app that accesses the backend
-                // Or, if multiple clients access the backend:
-                //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
-            });
-            const payload = ticket.getPayload();
-            const userid = payload['sub'];
-            console.log(payload);
-            console.log('Userid'+userid);
-            // If request specified a G Suite domain:
-            //const domain = payload['hd'];
-        }
-        verify.catch(console.error);
+        await verify();
         return true;
     } catch(error) {
         return false;
     }
 }
 
-app.post('/tokenSignIn', function(req, resp) {
-    if (tokenSignIn(req)) {
+app.post('/tokenSignIn', async function(req, resp) {
+    if (await tokenSignIn(req)) {
         resp.status(200);
         resp.send('Someone');
     } else {

@@ -33,6 +33,7 @@ function checkLoginState() {
 
 async function onSignIn(googleUser) {
     id_token = googleUser.getAuthResponse().id_token;
+    console.log(id_token);
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/tokenSignIn');
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -137,8 +138,8 @@ function createModal(recipes, i, profiles) {
     }
     scroll += '</ol></p><div class="ui comments"><h3 class="ui dividing header">Comments</h3>';
     for (let j = 0; j < recipes[i].comments.length; j++) {
-        scroll += '<div class="comment"><a class="avatar"><img src="'+profiles[recipes[i].creator].profilePicture+'"></a><div class="content"><a class="author" id="'+i+'author'+j+'">'+recipes[i].comments[j].author+'</a><div class="metadata"><span class="date">'+recipes[i].comments[j].date+'</span></div><div class="text">'+recipes[i].comments[j].text+'</div><div class="actions"><a class="reply">Reply</a></div></div></div>';
-        $(document).ready(function(){document.getElementById(i+'author'+j).addEventListener('click', function(event){getResults(event,'name',recipes[i].creator); $('.ui.modal').modal('hide'); $('.ui.modal.recipe.scrolling').remove();});});
+        scroll += '<div class="comment"><a class="avatar"><img src="'+profiles[recipes[i].comments[j].author].profilePicture+'"></a><div class="content"><a class="author" id="'+i+'author'+j+'">'+recipes[i].comments[j].author+'</a><div class="metadata"><span class="date">'+recipes[i].comments[j].date+'</span></div><div class="text">'+recipes[i].comments[j].text+'</div><div class="actions"><a class="reply">Reply</a></div></div></div>';
+        $(document).ready(function(){document.getElementById(i+'author'+j).addEventListener('click', function(event){getResults(event,'name',recipes[i].comments[j].author); $('.ui.modal').modal('hide'); $('.ui.modal.recipe.scrolling').remove();});});
     }
     scroll += '<form class="ui reply form" method="POST" action="/addComment" id="commentForm'+i+'"><div class="field"><textarea id="commentBox'+i+'"></textarea></div><button class="ui blue labeled submit icon button" type="submit"><i class="icon edit"></i>Add Comment</button></form><br><br></div></div>';
     document.getElementById('scroll'+i).innerHTML = scroll;
@@ -257,53 +258,41 @@ $(document).ready(function(){document.getElementById('addRecipe').addEventListen
 });});
 
 async function submitValues() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/tokenSignIn');
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.onload = function() {
-        console.log('Signed in as: ' + xhr.responseText);
-    };
-    xhr.send('idtoken=' + id_token);
-    xhr.onreadystatechange = async function() {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-            if (xhr.responseText == 'Someone'){
-                let date = getDate();
-                /*                 if (document.getElementById('Facebook').innerHTML.indexOf('fb-login') != -1){
-                    throw new Error('Please log in to add a new recipe!');
-                } */
-                let creator = username;
-                let title = document.getElementById('RecipeTitle').value;
-                let description = document.getElementById('RecipeDescription').value;
-                let ingredients = [];
-                for (let i = 0; i < document.getElementsByClassName('ui dropdown label').length-1; i++) {
-                    let newIngredient = {
-                        'quantity': document.getElementById('Quantity'+i).value,
-                        'unit': document.getElementById('Unit'+i).innerText,
-                        'ingredient': document.getElementById('Ingredient'+i).value
-                    };
-                    ingredients.push(newIngredient);
-                }
-                let directions = document.getElementById('RecipeDirections').value;
-                let thumbnail = document.getElementById('RecipeThumbnail').files[0];
-                let xhr = new XMLHttpRequest();
-                let fD = new FormData();
-                fD.append('image', thumbnail);
-                xhr.open('POST', '/uploadImage');
-                xhr.send(fD);
-                let response = await fetch('/new', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: 'date=' + date + '&creator=' + creator + '&title=' + title + '&description=' + description + '&ingredients=' + JSON.stringify(ingredients) + '&directions=' + directions + '&thumbnail=images/' + thumbnail.name.replace(/ /g,'_') + '&idtoken=' + id_token
-                });
-                if (!response.ok) {
-                    throw new Error('problem adding recipe' + response.code);
-                }
-                getResults(event, 'search');
-            }
-        }
-    };
+    let date = getDate();
+    /*                 if (document.getElementById('Facebook').innerHTML.indexOf('fb-login') != -1){
+        throw new Error('Please log in to add a new recipe!');
+    } */
+    let creator = username;
+    let title = document.getElementById('RecipeTitle').value;
+    let description = document.getElementById('RecipeDescription').value;
+    let ingredients = [];
+    for (let i = 0; i < document.getElementsByClassName('ui dropdown label').length-1; i++) {
+        let newIngredient = {
+            'quantity': document.getElementById('Quantity'+i).value,
+            'unit': document.getElementById('Unit'+i).innerText,
+            'ingredient': document.getElementById('Ingredient'+i).value
+        };
+        ingredients.push(newIngredient);
+    }
+    let directions = document.getElementById('RecipeDirections').value;
+    let thumbnail = document.getElementById('RecipeThumbnail').files[0];
+    let xhr = new XMLHttpRequest();
+    let fD = new FormData();
+    fD.append('image', thumbnail);
+    xhr.open('POST', '/uploadImage');
+    xhr.send(fD);
+    let response = await fetch('/new', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'date=' + date + '&creator=' + creator + '&title=' + title + '&description=' + description + '&ingredients=' + JSON.stringify(ingredients) + '&directions=' + directions + '&thumbnail=images/' + thumbnail.name.replace(/ /g,'_') + '&idtoken=' + id_token
+    });
+    let respBody = await response.text();
+    if (!response.ok) {
+        throw new Error('problem adding recipe ' + respBody);
+    }
+    getResults(event, 'search');
 }
 
 async function createProfile(userID) {

@@ -4,9 +4,9 @@
   "description": "Programming Summative Assignment 2 - website",
   "main": "server.js",
   "scripts": {
+    "pretest": "eslint index.js",
     "test": "jest",
-    "start": "node server.js",
-    "devStart": "nodemon server.js"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",

@@ -26,6 +26,7 @@ GET /recipes/search
 #### Parameters
 None
 #### Response
+200
 ##### Headers
 Content-Type:application/json
 ##### Body
@@ -48,6 +49,7 @@ GET /recipes/:criteria/:value
 criteria    The property being filtered             search/name/ingredient
 value       The required value for the criteria     string
 #### Response
+200
 ##### Headers
 Content-Type:application/json
 ##### Body
@@ -63,22 +65,28 @@ Content-Type:application/json
         "comments":\
     },\
 ]\
+404
+"Invalid criteria!"
 
 ### Get username from UserID
 GET /userIDName/:userID
 #### Parameters
 userID      The userID of the logged in user
 #### Response
+200
 ##### Headers
 Contents-Type:text/html
 ##### Body
 "user163"
+404
+"false"
 
 ### Get all profiles
 GET /profiles
 #### Parameters
 None
 #### Response
+200
 ##### Headers
 Content-Type:application/json
 ##### Body
@@ -100,6 +108,7 @@ GET /profiles/:username
 #### Parameters
 username    The username of the user about which you want to know details
 #### Response
+200
 ##### Headers
 Content-Type:application/json
 ##### Body
@@ -108,6 +117,8 @@ Content-Type:application/json
     "creationDate":"14 April 2019",\
     "profilePicture":"images/Screenshot_from_2019-01-16_16-38-41.png"\
 }\
+404
+"false"
 
 ### Post new recipe
 POST /new
@@ -119,7 +130,10 @@ Content-Type:application/x-www-form-urlencoded
 ##### Body
 date=26 April 2019&creator=user163&title=Cheesecake5&description=Yet another cheesecake for you to enjoy&ingredients=[{"quantity":"200","unit":"g","ingredient":"Cheese"},{"quantity":"300","unit":"g","ingredient":"Flour"},{"quantity":"3","unit":"No Units","ingredient":"Eggs"}]&directions=["Put stuff into bowl", "Cook for 20 minutes", "Eat"]&thumbnail=images/image1.jpg
 #### Response
-"Recipe successfully added"
+201     "Recipe successfully added"
+400     "All recipe properties must have a value!"
+400     "The JSON sent did not contain all of the required fields"
+401     "You must be logged in to add a new recipe!"
 
 ### Upload image
 POST /uploadImage
@@ -131,7 +145,8 @@ Content-Type: text/html; charset=utf-8
 ##### Body
 (Image encoded in utf-8 format)
 #### Response
-"Image uploaded!"
+201     "Image uploaded!"
+401     "You must be logged in to upload an image!"
 
 ### Add comment
 POST /addComment
@@ -143,7 +158,9 @@ Content-Type:application/x-www-form-urlencoded
 ##### Body
 date=26 April 2019&author=baker213&text=Tasty recipe! Thanks&recipe=6
 #### Response
-"Comment successfully added!"
+201     "Comment successfully added!"
+400     "The JSON sent did not contain all of the required fields"
+401     "You must be logged in to add a comment!"
 
 ### Create new profile
 POST /createProfile
@@ -155,7 +172,8 @@ Content-Type:application/x-www-form-urlencoded
 ##### Body
 userID=115240131475881817498&username=user163&date=26 April 2019&pictureURL=images/image1.jpg
 #### Response
-"New profile created!"
+201     "New profile created!"
+400     "The JSON sent was not valid"
 
 ### Token sign in
 POST /tokenSignIn
@@ -167,4 +185,5 @@ Content-Type:application/x-www-form-urlencoded
 ##### Body
 idToken=9238049823234
 #### Response
-"Someone"
+200     "Someone"
+401     "Invalid ID token"
