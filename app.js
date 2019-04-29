@@ -9,6 +9,8 @@ var multer = require('multer');
 var upload = multer();
 var directory = process.env.OPENSHIFT_DATA_DIR || '';
 
+//const tokenSignIn = require('./tokenSignIn.js');
+
 app.use(express.static('client'));
 app.use(bodyParser.urlencoded({extended: true }));
 
@@ -75,7 +77,7 @@ app.get('/userIDName/:userID', function(req, resp){
 });
 
 app.get('/profiles/:username', function(req, resp){
-    if (userIDName.hasOwnProperty(req.params.username)) {
+    if (profiles.hasOwnProperty(req.params.username)) {
         resp.status(200);
         resp.send(profiles[req.params.username]);
     } else {
@@ -174,26 +176,36 @@ app.post('/addComment', async function(req, resp){
     }
 });
 
-app.post('/createProfile', function(req, resp){
+app.post('/createProfile', async function(req, resp){
     if (await tokenSignIn(req)){
-        if (req.body.hasOwnProperty('date') && req.body.hasOwnProperty('pictureURL')&& req.body.hasOwnProperty('userID')&& req.body.hasOwnProperty('username')){ //Add rejection if username already exists
-            let userID = req.body.userID.toString();
-            let username = req.body.username;
-            userIDName[userID] = username;
-            let newProfile = {
-                "recipes": 0,
-                "creationDate": req.body.date,
-                "profilePicture": req.body.pictureURL
-            };
-            profiles[username] = newProfile;
-            //fs.writeFile(directory+'userIDName.json', JSON.stringify(userIDName));
-            //fs.writeFile(directory+'profiles.json', JSON.stringify(profiles));
-            resp.status(201);
-            resp.setHeader('Location', '/profiles/'+username);
-            resp.send('New profile created');
+        if (!userIDName.hasOwnProperty(req.body.userID)){
+            if (!profiles.hasOwnProperty(req.body.username)){
+                if (req.body.hasOwnProperty('date') && req.body.hasOwnProperty('pictureURL')&& req.body.hasOwnProperty('userID')&& req.body.hasOwnProperty('username')){ //Add rejection if username already exists
+                    let userID = req.body.userID.toString();
+                    let username = req.body.username;
+                    userIDName[userID] = username;
+                    let newProfile = {
+                        "recipes": 0,
+                        "creationDate": req.body.date,
+                        "profilePicture": req.body.pictureURL
+                    };
+                    profiles[username] = newProfile;
+                    //fs.writeFile(directory+'userIDName.json', JSON.stringify(userIDName));
+                    //fs.writeFile(directory+'profiles.json', JSON.stringify(profiles));
+                    resp.status(201);
+                    resp.setHeader('Location', '/profiles/'+username);
+                    resp.send('New profile created');
+                } else {
+                    resp.status(400);
+                    resp.send('The JSON sent was not valid');
+                }
+            } else {
+                resp.status(409);
+                resp.send('Profile with this username already exists!');
+            }
         } else {
-            resp.status(400);
-            resp.send('The JSON sent was not valid');
+            resp.status(409);
+            resp.send('Profile already exists for this Google account');
         }
     } else {
         resp.status(401);
@@ -228,7 +240,7 @@ async function tokenSignIn(req){
 }
 
 app.post('/tokenSignIn', async function(req, resp) {
-    if (await tokenSignIn(req)) {
+    if (await tokenSignIn.tokenSignIn(req)) {
         resp.status(200);
         resp.send('User authenticated');
     } else {
@@ -238,3 +250,6 @@ app.post('/tokenSignIn', async function(req, resp) {
 });
 
 module.exports = app;
+module.exports.tokenSignIn = function(req){
+    tokenSignIn(req);
+}

@@ -1,7 +1,7 @@
 'use strict';
-
 const request = require('supertest');
 const app = require("./app");
+
 
 describe("Test recipes service", () => {
     test("GET /recipes/search succeeds", () => {
@@ -46,16 +46,20 @@ describe("Test recipes service", () => {
         .expect("Content-type", /json/);
     });
 
-    test("GET /profiles/noone returns 'false'", () => {
-        return request(app)
-        .get("/profiles/noone")
-        .expect('false');
+    test("GET /profiles/noone cannot be found", async() => {
+        try {
+            await request(app)
+            .get("/profiles/noone");
+        } catch(error) {
+            expect(error.message).toBe('Not Found');
+        }    
     });
 
     test("Add new recipe", async() => {
         const ingredients = [{"quantity":"2", "units":"No Units", "ingredient":"Eggs"}, {"quantity":"200", "units":"g", "ingredient":"flour"}];
         const directions = ["Preheat an oven to 200C", "Combine the eggs and the flour in a large bowl", "Place in a baking tray and cook for 20 minutes", "Leave to cool for 5 minutes before serving"]
         const body2 = {
+            "idtoken":12,
             "date":"23 April 2019",
             "creator":"baker213",
             "title":"Test Recipe",
@@ -64,6 +68,9 @@ describe("Test recipes service", () => {
             "directions":JSON.stringify(directions),
             "thumbnail":"https://images.pexels.com/photos/89690/pexels-photo-89690.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
         }
+        jest.mock('./app', () => ({
+            tokenSignIn: () => true,
+        }));
         await request(app)
         .post("/new")
         .type('form')
@@ -99,7 +106,7 @@ describe("Test recipes service", () => {
         .expect("New profile created");
     });
 
-/*     test("Create new profile without all required data values", async() => {
+    test("Create new profile without all required data values", async() => {
         const toSend = {
             "userID":"01285239523234",
             "date":"27 April 2019",
@@ -109,6 +116,6 @@ describe("Test recipes service", () => {
         .post('/createProfile')
         .type('form')
         .send(toSend);
-        expect(response.statusCode).toBe(400);
-    }); */
+        expect(response).toThrow();
+    });
 });

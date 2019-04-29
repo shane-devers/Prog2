@@ -320,7 +320,7 @@ async function createProfile(userID) {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: 'userID='+userID + '&username='+username + '&date=' + date + '&pictureURL=images/' + profilePicture.name.replace(/ /g,'_')
+        body: 'userID='+userID + '&username='+username + '&date=' + date + '&pictureURL=images/' + profilePicture.name.replace(/ /g,'_') + '&idtoken=' + id_token
     });
     let respBody = await response.text();
     if (!response.ok) {
