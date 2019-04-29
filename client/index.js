@@ -107,7 +107,8 @@ async function getResults(event, criteria, name) {
             document.getElementById('title').innerHTML ='<div class="ui stackable two column grid"><div class="two wide column"><img class="ui small image" src="'+profile[name].profilePicture+'"></div><div class="column">'+name+'\'s Recipes</div></div><h3><div class="ui stackable two column grid"><div class="two wide column">Recipes: '+profile[name].recipes+'</div><div class="column">Creation Date: '+profile[name].creationDate+'</div></div></h3>';
         }
     } catch (error) {
-        alert('There was an error! Please try again later!');
+        createErrorModal('Error', 'Could not contact server! Please try again later!');
+        //alert('There was an error! Please try again later!');
     }
 }
 
@@ -146,6 +147,13 @@ function createModal(recipes, i, profiles) {
     $(document).ready(function(){document.getElementById('commentForm'+i).addEventListener('submit', function(event){addComment(event, i);});});
 }
 
+function createErrorModal(title, message) {
+    document.getElementById('modals').innerHTML += '<div class="ui modal error" id="ErrorModal"></div>';
+    document.getElementById('ErrorModal').innerHTML += '<div class="header">'+title+'</div><div class="content">'+message+'<br><button type="button" id="ErrorOK">OK</button></div>';
+    document.getElementById('ErrorOK').addEventListener('click', function(){$('#ErrorModal').modal('hide'); $('.ui.modal.error').remove();});
+    $('#ErrorModal').modal('show');
+}
+
 async function addComment(event, i) {
     console.log(i);
     event.preventDefault();
@@ -167,8 +175,9 @@ async function addComment(event, i) {
         },
         body: 'date=' + date + '&author=' + creator + '&text=' + text + '&recipe=' + i
     });
+    let respBody = await response.text();
     if (!response.ok) {
-        throw new Error('problem adding comment' + response.code);
+        createErrorModal('Problem adding recipe', respBody);
     }
 }
 
@@ -269,7 +278,7 @@ async function submitValues() {
     for (let i = 0; i < document.getElementsByClassName('ui dropdown label').length-1; i++) {
         let newIngredient = {
             'quantity': document.getElementById('Quantity'+i).value,
-            'unit': document.getElementById('Unit'+i).innerText,
+            'unit': document.getElementById('Unit'+i).innerText.trim(),
             'ingredient': document.getElementById('Ingredient'+i).value
         };
         ingredients.push(newIngredient);
@@ -279,6 +288,7 @@ async function submitValues() {
     let xhr = new XMLHttpRequest();
     let fD = new FormData();
     fD.append('image', thumbnail);
+    fD.append('idtoken', id_token);
     xhr.open('POST', '/uploadImage');
     xhr.send(fD);
     let response = await fetch('/new', {
@@ -290,7 +300,8 @@ async function submitValues() {
     });
     let respBody = await response.text();
     if (!response.ok) {
-        throw new Error('problem adding recipe ' + respBody);
+        createErrorModal('Problem adding recipe', respBody);
+        //throw new Error('problem adding recipe ' + respBody);
     }
     getResults(event, 'search');
 }
@@ -311,8 +322,9 @@ async function createProfile(userID) {
         },
         body: 'userID='+userID + '&username='+username + '&date=' + date + '&pictureURL=images/' + profilePicture.name.replace(/ /g,'_')
     });
+    let respBody = await response.text();
     if (!response.ok) {
-        throw new Error('problem adding recipe' + response.code);
+        createErrorModal('Problem adding recipe', respBody);
     }
 }
 

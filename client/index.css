@@ -46,3 +46,8 @@
 .ui.reply.form {
     margin-left: 20px;
 }
+
+.ui.modal.error {
+    max-height: 80%;
+    height: 10%;
+}

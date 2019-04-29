@@ -128,7 +128,7 @@ None
 ##### Headers
 Content-Type:application/x-www-form-urlencoded
 ##### Body
-date=26 April 2019&creator=user163&title=Cheesecake5&description=Yet another cheesecake for you to enjoy&ingredients=[{"quantity":"200","unit":"g","ingredient":"Cheese"},{"quantity":"300","unit":"g","ingredient":"Flour"},{"quantity":"3","unit":"No Units","ingredient":"Eggs"}]&directions=["Put stuff into bowl", "Cook for 20 minutes", "Eat"]&thumbnail=images/image1.jpg
+date=26 April 2019&creator=user163&title=Cheesecake5&description=Yet another cheesecake for you to enjoy&ingredients=[{"quantity":"200","unit":"g","ingredient":"Cheese"},{"quantity":"300","unit":"g","ingredient":"Flour"},{"quantity":"3","unit":"No Units","ingredient":"Eggs"}]&directions=["Put stuff into bowl", "Cook for 20 minutes", "Eat"]&thumbnail=images/image1.jpg&idtoken=771432029351092430192830
 #### Response
 201     "Recipe successfully added"
 400     "All recipe properties must have a value!"
@@ -144,8 +144,10 @@ None
 Content-Type: text/html; charset=utf-8
 ##### Body
 (Image encoded in utf-8 format)
+idtoken=771432029351092430192830
 #### Response
 201     "Image uploaded!"
+        Location: /images/{filename}
 401     "You must be logged in to upload an image!"
 
 ### Add comment
@@ -156,7 +158,7 @@ None
 ##### Headers
 Content-Type:application/x-www-form-urlencoded
 ##### Body
-date=26 April 2019&author=baker213&text=Tasty recipe! Thanks&recipe=6
+date=26 April 2019&author=baker213&text=Tasty recipe! Thanks&recipe=6&idtoken=771432029351092430192830
 #### Response
 201     "Comment successfully added!"
 400     "The JSON sent did not contain all of the required fields"
@@ -170,10 +172,12 @@ None
 ##### Headers
 Content-Type:application/x-www-form-urlencoded
 ##### Body
-userID=115240131475881817498&username=user163&date=26 April 2019&pictureURL=images/image1.jpg
+userID=115240131475881817498&username=user163&date=26 April 2019&pictureURL=images/image1.jpg&idtoken=771432029351092430192830
 #### Response
 201     "New profile created!"
+        Location: /profiles/{username}
 400     "The JSON sent was not valid"
+401     "You must be signed in to a Google account in order to create a profile for this website"
 
 ### Token sign in
 POST /tokenSignIn
@@ -185,5 +189,5 @@ Content-Type:application/x-www-form-urlencoded
 ##### Body
 idToken=9238049823234
 #### Response
-200     "Someone"
+200     "User authenticated"
 401     "Invalid ID token"

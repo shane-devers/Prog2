@@ -114,8 +114,8 @@ app.post('/new', async function(req, resp){
                 };
                 recipes.push(newRecipe);
                 profiles[req.body.creator].recipes += 1;
-                fs.writeFile(directory + 'recipes.json', JSON.stringify(recipes));
-                fs.writeFile(directory + 'profiles.json', JSON.stringify(profiles));
+                //fs.writeFile(directory + 'recipes.json', JSON.stringify(recipes));
+                //fs.writeFile(directory + 'profiles.json', JSON.stringify(profiles));
                 resp.status(201);
                 resp.send('Recipe successfully added');
             } else {
@@ -133,14 +133,16 @@ app.post('/new', async function(req, resp){
 });
 
 app.post('/uploadImage', upload.single('image'), async function(req, resp){
+    console.log(req);
     if (await tokenSignIn(req)){
-        console.log(directory);
+        console.log(req);
         let img = req.file;
-        fs.writeFile(directory+'client/images/'+img.originalname.replace(/ /g,'_'), img.buffer, 'ascii', (err) => {
-             if (err) throw err;
-             console.log('File saved successfully!');
-        });
+        //fs.writeFile(directory+'client/images/'+img.originalname.replace(/ /g,'_'), img.buffer, 'ascii', (err) => {
+            // if (err) throw err;
+             //console.log('File saved successfully!');
+        //});
         resp.status(201);
+        resp.setHeader('Location', '/images/'+img.originalname.replace(/ /g, '_'));
         resp.send('Image uploaded!');
     } else {
         resp.status(401);
@@ -173,27 +175,34 @@ app.post('/addComment', async function(req, resp){
 });
 
 app.post('/createProfile', function(req, resp){
-    if (req.body.hasOwnProperty('date') && req.body.hasOwnProperty('pictureURL')&& req.body.hasOwnProperty('userID')&& req.body.hasOwnProperty('username')){
-        let userID = req.body.userID.toString();
-        let username = req.body.username;
-        userIDName[userID] = username;
-        let newProfile = {
-            "recipes": 0,
-            "creationDate": req.body.date,
-            "profilePicture": req.body.pictureURL
-        };
-        profiles[username] = newProfile;
-        fs.writeFile(directory+'userIDName.json', JSON.stringify(userIDName));
-        fs.writeFile(directory+'profiles.json', JSON.stringify(profiles));
-        resp.status(201);
-        resp.send('New profile created');
+    if (await tokenSignIn(req)){
+        if (req.body.hasOwnProperty('date') && req.body.hasOwnProperty('pictureURL')&& req.body.hasOwnProperty('userID')&& req.body.hasOwnProperty('username')){ //Add rejection if username already exists
+            let userID = req.body.userID.toString();
+            let username = req.body.username;
+            userIDName[userID] = username;
+            let newProfile = {
+                "recipes": 0,
+                "creationDate": req.body.date,
+                "profilePicture": req.body.pictureURL
+            };
+            profiles[username] = newProfile;
+            //fs.writeFile(directory+'userIDName.json', JSON.stringify(userIDName));
+            //fs.writeFile(directory+'profiles.json', JSON.stringify(profiles));
+            resp.status(201);
+            resp.setHeader('Location', '/profiles/'+username);
+            resp.send('New profile created');
+        } else {
+            resp.status(400);
+            resp.send('The JSON sent was not valid');
+        }
     } else {
-        resp.status(400);
-        resp.send('The JSON sent was not valid');
+        resp.status(401);
+        resp.send('You must be signed in to a Google account in order to create a profile for this website');
     }
 });
 
 async function tokenSignIn(req){
+    console.log(req);
     const {OAuth2Client} = require('google-auth-library');
     const client = new OAuth2Client('845596870958-sjnd8u9h2togiqlj0e3r7ofg59lc23nr.apps.googleusercontent.com');
     async function verify() {
@@ -221,7 +230,7 @@ async function tokenSignIn(req){
 app.post('/tokenSignIn', async function(req, resp) {
     if (await tokenSignIn(req)) {
         resp.status(200);
-        resp.send('Someone');
+        resp.send('User authenticated');
     } else {
         resp.status(401);
         resp.send('Invalid ID token');
