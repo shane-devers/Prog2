@@ -136,7 +136,6 @@ app.post('/uploadImage', upload.single('image'), async function(req, resp){
         let img = req.file;
         fs.writeFile(directory+'client/images/'+img.originalname.replace(/ /g,'_'), img.buffer, 'ascii', (err) => {
             if (err) throw err;
-            console.log('File saved successfully!');
         });
         resp.status(201);
         resp.setHeader('Location', '/images/'+img.originalname.replace(/ /g, '_'));

@@ -329,6 +329,8 @@ async function createProfile(userID) {
     let respBody = await response.text();
     if (!response.ok) {
         createErrorModal('Problem adding recipe', respBody);
+    } else {
+        username = document.getElementById('username').value;
     }
 }
 
