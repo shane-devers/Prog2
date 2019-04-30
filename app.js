@@ -113,8 +113,8 @@ app.post('/new', async function(req, resp){
                 };
                 recipes.push(newRecipe);
                 profiles[req.body.creator].recipes += 1;
-                //fs.writeFile(directory + 'recipes.json', JSON.stringify(recipes));
-                //fs.writeFile(directory + 'profiles.json', JSON.stringify(profiles));
+                fs.writeFile(directory + 'recipes.json', JSON.stringify(recipes));
+                fs.writeFile(directory + 'profiles.json', JSON.stringify(profiles));
                 resp.status(201);
                 resp.send('Recipe successfully added');
             } else {
@@ -134,10 +134,10 @@ app.post('/new', async function(req, resp){
 app.post('/uploadImage', upload.single('image'), async function(req, resp){
     if (await tokenSignIn.tokenSignIn(req)){
         let img = req.file;
-        //fs.writeFile(directory+'client/images/'+img.originalname.replace(/ /g,'_'), img.buffer, 'ascii', (err) => {
-            // if (err) throw err;
-             //console.log('File saved successfully!');
-        //});
+        fs.writeFile(directory+'client/images/'+img.originalname.replace(/ /g,'_'), img.buffer, 'ascii', (err) => {
+            if (err) throw err;
+            console.log('File saved successfully!');
+        });
         resp.status(201);
         resp.setHeader('Location', '/images/'+img.originalname.replace(/ /g, '_'));
         resp.send('Image uploaded!');
@@ -157,7 +157,7 @@ app.post('/addComment', async function(req, resp){
                 "text": req.body.text
             };
             recipes[i].comments.push(newComment);
-            //fs.writeFile(directory+'recipes.json', JSON.stringify(recipes));
+            fs.writeFile(directory+'recipes.json', JSON.stringify(recipes));
             resp.status(201);
             resp.send('Comment successfully added');
         } else {
@@ -184,8 +184,8 @@ app.post('/createProfile', async function(req, resp){
                         "profilePicture": req.body.pictureURL
                     };
                     profiles[username] = newProfile;
-                    //fs.writeFile(directory+'userIDName.json', JSON.stringify(userIDName));
-                    //fs.writeFile(directory+'profiles.json', JSON.stringify(profiles));
+                    fs.writeFile(directory+'userIDName.json', JSON.stringify(userIDName));
+                    fs.writeFile(directory+'profiles.json', JSON.stringify(profiles));
                     resp.status(201);
                     resp.setHeader('Location', '/profiles/'+username);
                     resp.send('New profile created');
