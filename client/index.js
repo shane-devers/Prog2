@@ -290,6 +290,7 @@ async function submitValues() {
     fD.append('image', thumbnail);
     fD.append('idtoken', id_token);
     xhr.open('POST', '/uploadImage');
+    console.log(fD);
     xhr.send(fD);
     let response = await fetch('/new', {
         method: 'POST',

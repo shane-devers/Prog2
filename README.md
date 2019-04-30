@@ -192,6 +192,8 @@ userID=115240131475881817498&username=user163&date=26 April 2019&pictureURL=imag
 |   |Location: /profiles/{username}|
 |400|"The JSON sent was not valid"|
 |401|"You must be signed in to a Google account in order to create a profile for this website"|
+|409|"Profile with this username already exists!"|
+|409|"Profile already exists for this Google account"|
 
 ### Token sign in
 POST /tokenSignIn
