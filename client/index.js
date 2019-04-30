@@ -317,6 +317,7 @@ async function createProfile(userID) {
     let fD = new FormData();
     fD.append('image', profilePicture);
     xhr.open('POST', '/uploadImage');
+    xhr.setRequestHeader('Authorization', id_token);
     xhr.send(fD);
     let response = await fetch('/createProfile', {
         method: 'POST',
