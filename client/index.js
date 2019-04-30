@@ -311,7 +311,7 @@ async function submitValues() {
 
 async function createProfile(userID) {
     let date = getDate();
-    let username = document.getElementById('username').value;
+    let usernameInput = document.getElementById('username').value;
     let profilePicture = document.getElementById('profilePicture').files[0];
     let xhr = new XMLHttpRequest();
     let fD = new FormData();
@@ -324,7 +324,7 @@ async function createProfile(userID) {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': id_token
         },
-        body: 'userID='+userID + '&username='+username + '&date=' + date + '&pictureURL=images/' + profilePicture.name.replace(/ /g,'_')
+        body: 'userID='+userID + '&username='+usernameInput + '&date=' + date + '&pictureURL=images/' + profilePicture.name.replace(/ /g,'_')
     });
     let respBody = await response.text();
     if (!response.ok) {
