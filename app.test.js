@@ -1,6 +1,7 @@
 'use strict';
 const request = require('supertest');
 const app = require("./app");
+const tokenSignIn = require('./tokenSignIn');
 
 
 describe("Test recipes service", () => {
@@ -28,10 +29,13 @@ describe("Test recipes service", () => {
         .expect("Content-type", /html/);
     });
 
-    test("GET /userIDName/acx (not in userIDName.json) returns false", () => {
-        return request(app)
-        .get("/userIDName/acx")
-        .expect('false');
+    test("GET /userIDName/acx (not in userIDName.json) returns false", async() => {
+        try {
+            await request(app)
+            .get("/userIDName/acx")
+        } catch(error) {
+            expect(error.message).toBe('Not Found');
+        }
     });
 
     test("GET /profiles returns JSON", () => {
@@ -59,6 +63,30 @@ describe("Test recipes service", () => {
         const ingredients = [{"quantity":"2", "units":"No Units", "ingredient":"Eggs"}, {"quantity":"200", "units":"g", "ingredient":"flour"}];
         const directions = ["Preheat an oven to 200C", "Combine the eggs and the flour in a large bowl", "Place in a baking tray and cook for 20 minutes", "Leave to cool for 5 minutes before serving"]
         const body2 = {
+            "idtoken":98981029412803981029480912840,
+            "date":"23 April 2019",
+            "creator":"baker213",
+            "title":"Test Recipe",
+            "description":"A basic recipe for something",
+            "ingredients":JSON.stringify(ingredients),
+            "directions":JSON.stringify(directions),
+            "thumbnail":"https://images.pexels.com/photos/89690/pexels-photo-89690.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+        }
+        const spy = jest.spyOn(tokenSignIn, 'tokenSignIn');
+        spy.mockReturnValue(true);
+        await request(app)
+        .post("/new")
+        .type('form')
+        .send(body2)
+        .expect("Recipe successfully added");
+        spy.mockRestore();
+    });
+
+    test("Add new recipe fails with invalid ID token", async() => {
+        try {
+        const ingredients = [{"quantity":"2", "units":"No Units", "ingredient":"Eggs"}, {"quantity":"200", "units":"g", "ingredient":"flour"}];
+        const directions = ["Preheat an oven to 200C", "Combine the eggs and the flour in a large bowl", "Place in a baking tray and cook for 20 minutes", "Leave to cool for 5 minutes before serving"]
+        const body2 = {
             "idtoken":12,
             "date":"23 April 2019",
             "creator":"baker213",
@@ -68,14 +96,13 @@ describe("Test recipes service", () => {
             "directions":JSON.stringify(directions),
             "thumbnail":"https://images.pexels.com/photos/89690/pexels-photo-89690.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
         }
-        jest.mock('./app', () => ({
-            tokenSignIn: () => true,
-        }));
         await request(app)
         .post("/new")
         .type('form')
         .send(body2)
-        .expect("Recipe successfully added");
+        } catch(error) {
+            expect(error.message).toBe('Unauthorized');
+        }
     });
 
     test("Add new comment", async() => {

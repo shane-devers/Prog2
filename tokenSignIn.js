@@ -1,5 +1,4 @@
-async function tokenSignIn(req){
-    console.log(req);
+const tokenSignIn = async function(req){
     const {OAuth2Client} = require('google-auth-library');
     const client = new OAuth2Client('845596870958-sjnd8u9h2togiqlj0e3r7ofg59lc23nr.apps.googleusercontent.com');
     async function verify() {
@@ -24,4 +23,4 @@ async function tokenSignIn(req){
     }
 }
 
-module.exports = tokenSignIn;
+module.exports.tokenSignIn = tokenSignIn;

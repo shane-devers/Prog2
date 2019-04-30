@@ -9,13 +9,12 @@ var multer = require('multer');
 var upload = multer();
 var directory = process.env.OPENSHIFT_DATA_DIR || '';
 
-//const tokenSignIn = require('./tokenSignIn.js');
+const tokenSignIn = require('./tokenSignIn.js');
 
 app.use(express.static('client'));
 app.use(bodyParser.urlencoded({extended: true }));
 
 app.get('/recipes/:criteria/:value', function(req, resp){
-    console.log(req.params);
     let criteria = req.params.criteria.replace(':','');
     let value = req.params.value.replace(':','');
     let outputRecipes = [];
@@ -66,7 +65,6 @@ function matchesCriteria(recipe, criteria, value){
 }
 
 app.get('/userIDName/:userID', function(req, resp){
-    console.log(req.params.userID);
     if (userIDName.hasOwnProperty(req.params.userID)){
         resp.status(200);
         resp.send(userIDName[req.params.userID]);
@@ -93,7 +91,7 @@ app.get('/profiles', function(req, resp){
 
 app.post('/new', async function(req, resp){
     console.log(directory);
-    if (await tokenSignIn(req)){
+    if (await tokenSignIn.tokenSignIn(req)){
         if (req.body.hasOwnProperty('ingredients') && req.body.hasOwnProperty('directions') && req.body.hasOwnProperty('date') && req.body.hasOwnProperty('creator') && req.body.hasOwnProperty('title') && req.body.hasOwnProperty('description') && req.body.hasOwnProperty('thumbnail')){
             if (req.body.ingredients != '' && req.body.directions != '' && req.body.date != '' && req.body.creator != '' && req.body.title != '' && req.body.description != '' && req.body.thumbnail != '') {
                 let ingredients = '';
@@ -135,9 +133,7 @@ app.post('/new', async function(req, resp){
 });
 
 app.post('/uploadImage', upload.single('image'), async function(req, resp){
-    console.log(req);
-    if (await tokenSignIn(req)){
-        console.log(req);
+    if (await tokenSignIn.tokenSignIn(req)){
         let img = req.file;
         //fs.writeFile(directory+'client/images/'+img.originalname.replace(/ /g,'_'), img.buffer, 'ascii', (err) => {
             // if (err) throw err;
@@ -153,8 +149,7 @@ app.post('/uploadImage', upload.single('image'), async function(req, resp){
 });
 
 app.post('/addComment', async function(req, resp){
-    console.log(req.body);
-    if (await tokenSignIn(req)){
+    if (await tokenSignIn.tokenSignIn(req)){
         if (req.body.hasOwnProperty('author') && req.body.hasOwnProperty('date') && req.body.hasOwnProperty('text')){
             let i = req.body.recipe;
             let newComment = {
@@ -177,7 +172,7 @@ app.post('/addComment', async function(req, resp){
 });
 
 app.post('/createProfile', async function(req, resp){
-    if (await tokenSignIn(req)){
+    if (await tokenSignIn.tokenSignIn(req)){
         if (!userIDName.hasOwnProperty(req.body.userID)){
             if (!profiles.hasOwnProperty(req.body.username)){
                 if (req.body.hasOwnProperty('date') && req.body.hasOwnProperty('pictureURL')&& req.body.hasOwnProperty('userID')&& req.body.hasOwnProperty('username')){ //Add rejection if username already exists
@@ -213,8 +208,7 @@ app.post('/createProfile', async function(req, resp){
     }
 });
 
-async function tokenSignIn(req){
-    console.log(req);
+/* async function tokenSignIn(req){
     const {OAuth2Client} = require('google-auth-library');
     const client = new OAuth2Client('845596870958-sjnd8u9h2togiqlj0e3r7ofg59lc23nr.apps.googleusercontent.com');
     async function verify() {
@@ -237,7 +231,7 @@ async function tokenSignIn(req){
     } catch(error) {
         return false;
     }
-}
+} */
 
 app.post('/tokenSignIn', async function(req, resp) {
     if (await tokenSignIn.tokenSignIn(req)) {
@@ -250,6 +244,6 @@ app.post('/tokenSignIn', async function(req, resp) {
 });
 
 module.exports = app;
-module.exports.tokenSignIn = function(req){
-    tokenSignIn(req);
-}
+/* module.exports.tokenSignIn = function(req){
+    return tokenSignIn(req);
+} */
