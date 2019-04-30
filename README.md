@@ -43,6 +43,17 @@ Content-Type:application/json
     },\
 ]\
 
+|Property|Meaning|
+|---|---|
+|date|Date that the recipe was uploaded|
+|creator|Username of user that uploaded the recipe|
+|title|The title of the recipe|
+|description|A brief description of the recipe|
+|ingredients|A list of ingredients used in the recipe|
+|directions|The steps required to make the recipe|
+|thumbnail|The location of the image assigned to the recipe|
+|comments|The comments that have been made on the recipe|
+
 ### List recipes by criteria
 GET /recipes/:criteria/:value
 #### Parameters
@@ -67,6 +78,18 @@ Content-Type:application/json
         "comments":\
     },\
 ]\
+
+|Property|Meaning|
+|---|---|
+|date|Date that the recipe was uploaded|
+|creator|Username of user that uploaded the recipe|
+|title|The title of the recipe|
+|description|A brief description of the recipe|
+|ingredients|A list of ingredients used in the recipe|
+|directions|The steps required to make the recipe|
+|thumbnail|The location of the image assigned to the recipe|
+|comments|The comments that have been made on the recipe|
+
 404
 "Invalid criteria!"
 
@@ -107,6 +130,12 @@ Content-Type:application/json
     }\
 }
 
+|Property|Meaning|
+|---|---|
+|recipes|The number of recipes that this user has uploaded|
+|creationDate|The date on which the profile was created|
+|profilePicture|The location of this user's profile picture on the server|
+
 ### Get profile details from username
 GET /profiles/:username
 #### Parameters
@@ -123,7 +152,16 @@ Content-Type:application/json
     "creationDate":"14 April 2019",\
     "profilePicture":"images/Screenshot_from_2019-01-16_16-38-41.png"\
 }\
+
+|Property|Meaning|
+|---|---|
+|recipes|The number of recipes that this user has uploaded|
+|creationDate|The date on which the profile was created|
+|profilePicture|The location of this user's profile picture on the server|
+
+#### Response
 404
+##### Body
 "false"
 
 ### Post new recipe
@@ -133,8 +171,20 @@ None
 #### Request
 ##### Headers
 Content-Type:application/x-www-form-urlencoded
+Authorization:{idtoken}
 ##### Body
-date=26 April 2019&creator=user163&title=Cheesecake5&description=Yet another cheesecake for you to enjoy&ingredients=[{"quantity":"200","unit":"g","ingredient":"Cheese"},{"quantity":"300","unit":"g","ingredient":"Flour"},{"quantity":"3","unit":"No Units","ingredient":"Eggs"}]&directions=["Put stuff into bowl", "Cook for 20 minutes", "Eat"]&thumbnail=images/image1.jpg&idtoken=771432029351092430192830
+date=26 April 2019&creator=user163&title=Cheesecake5&description=Yet another cheesecake for you to enjoy&ingredients=[{"quantity":"200","unit":"g","ingredient":"Cheese"},{"quantity":"300","unit":"g","ingredient":"Flour"},{"quantity":"3","unit":"No Units","ingredient":"Eggs"}]&directions=["Put stuff into bowl", "Cook for 20 minutes", "Eat"]&thumbnail=images/image1.jpg\
+
+|Parameter|Meaning|
+|---|---|
+|date|The current date|
+|creator|The username of the user uploading the recipe|
+|title|The title of the recipe|
+|description|A brief description of the recipe|
+|ingredients|A list of ingredients used in the recipe|
+|directions|The steps required to make the recipe|
+|thumbnail|The location of the image assigned to the recipe|
+
 #### Response
 |Code|Body|
 |---|---|
@@ -150,14 +200,14 @@ None
 #### Request
 ##### Headers
 Content-Type: text/html; charset=utf-8
+Authorization:{idtoken}
 ##### Body
 (Image encoded in utf-8 format)
-idtoken=771432029351092430192830
 #### Response
 |Code|Body|
 |---|---|
 |201|"Image uploaded!"|
-| |Location: /images/{filename}|
+|   |Location: /images/{filename}|
 |401|"You must be logged in to upload an image!"|
 
 ### Add comment
@@ -167,8 +217,17 @@ None
 #### Request
 ##### Headers
 Content-Type:application/x-www-form-urlencoded
+Authorization:{idtoken}
 ##### Body
-date=26 April 2019&author=baker213&text=Tasty recipe! Thanks&recipe=6&idtoken=771432029351092430192830
+date=26 April 2019&author=baker213&text=Tasty recipe! Thanks&recipe=6
+
+|Parameter|Meaning|
+|---|---|
+|date|The current date|
+|author|The username of the user that is making the comment|
+|text|The actual comment being made|
+|recipe|The recipe that the comment is being made on|
+
 #### Response
 |Code|Body|
 |---|---|
@@ -183,8 +242,17 @@ None
 #### Request
 ##### Headers
 Content-Type:application/x-www-form-urlencoded
+Authorization:{idtoken}
 ##### Body
-userID=115240131475881817498&username=user163&date=26 April 2019&pictureURL=images/image1.jpg&idtoken=771432029351092430192830
+userID=115240131475881817498&username=user163&date=26 April 2019&pictureURL=images/image1.jpg
+
+|Parameter|Meaning|
+|---|---|
+|userID|The Google userID of the user|
+|username|The username of the user's profile for this site|
+|date|The current date|
+|pictureURL|The file path of the image that will be the user's profile picture|
+
 #### Response
 |Code|Body|
 |---|---|
@@ -202,8 +270,9 @@ None
 #### Request
 ##### Headers
 Content-Type:application/x-www-form-urlencoded
+Authorization:{idtoken}
 ##### Body
-idToken=9238049823234
+None
 #### Response
 |Code|Body|
 |---|---|

@@ -90,7 +90,6 @@ app.get('/profiles', function(req, resp){
 });
 
 app.post('/new', async function(req, resp){
-    console.log(directory);
     if (await tokenSignIn.tokenSignIn(req)){
         if (req.body.hasOwnProperty('ingredients') && req.body.hasOwnProperty('directions') && req.body.hasOwnProperty('date') && req.body.hasOwnProperty('creator') && req.body.hasOwnProperty('title') && req.body.hasOwnProperty('description') && req.body.hasOwnProperty('thumbnail')){
             if (req.body.ingredients != '' && req.body.directions != '' && req.body.date != '' && req.body.creator != '' && req.body.title != '' && req.body.description != '' && req.body.thumbnail != '') {
@@ -134,7 +133,6 @@ app.post('/new', async function(req, resp){
 
 app.post('/uploadImage', upload.single('image'), async function(req, resp){
     if (await tokenSignIn.tokenSignIn(req)){
-        console.log(req);
         let img = req.file;
         //fs.writeFile(directory+'client/images/'+img.originalname.replace(/ /g,'_'), img.buffer, 'ascii', (err) => {
             // if (err) throw err;

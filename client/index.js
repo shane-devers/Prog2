@@ -37,10 +37,10 @@ async function onSignIn(googleUser) {
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/tokenSignIn');
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Authorization', id_token);
     xhr.onload = function() {
         console.log('Signed in as: ' + xhr.responseText);
     };
-    xhr.send('idtoken=' + id_token);
     profile = googleUser.getBasicProfile();
     console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
     console.log('Name: ' + profile.getName());
@@ -171,7 +171,8 @@ async function addComment(event, i) {
     let response = await fetch('/addComment', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': id_token
         },
         body: 'date=' + date + '&author=' + creator + '&text=' + text + '&recipe=' + i
     });
@@ -288,14 +289,15 @@ async function submitValues() {
     let xhr = new XMLHttpRequest();
     let fD = new FormData();
     fD.append('image', thumbnail);
-    fD.append('idtoken', id_token);
     xhr.open('POST', '/uploadImage');
+    xhr.setRequestHeader('Authorization', id_token);
     console.log(fD);
     xhr.send(fD);
     let response = await fetch('/new', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': id_token
         },
         body: 'date=' + date + '&creator=' + creator + '&title=' + title + '&description=' + description + '&ingredients=' + JSON.stringify(ingredients) + '&directions=' + directions + '&thumbnail=images/' + thumbnail.name.replace(/ /g,'_') + '&idtoken=' + id_token
     });
@@ -319,9 +321,10 @@ async function createProfile(userID) {
     let response = await fetch('/createProfile', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': id_token
         },
-        body: 'userID='+userID + '&username='+username + '&date=' + date + '&pictureURL=images/' + profilePicture.name.replace(/ /g,'_') + '&idtoken=' + id_token
+        body: 'userID='+userID + '&username='+username + '&date=' + date + '&pictureURL=images/' + profilePicture.name.replace(/ /g,'_')
     });
     let respBody = await response.text();
     if (!response.ok) {

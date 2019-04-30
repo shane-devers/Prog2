@@ -2,7 +2,7 @@
 const request = require('supertest');
 const app = require("./app");
 const tokenSignIn = require('./tokenSignIn');
-//const image = require('http://clipart-library.com/images/BTaKbqGEc.png')
+const image = 'images/chocolate-cake.jpg';
 
 
 describe("Test recipes service", () => {
@@ -91,7 +91,6 @@ describe('Test new recipe service', () => {
         const ingredients = [{"quantity":"2", "units":"No Units", "ingredient":"Eggs"}, {"quantity":"200", "units":"g", "ingredient":"flour"}];
         const directions = ["Preheat an oven to 200C", "Combine the eggs and the flour in a large bowl", "Place in a baking tray and cook for 20 minutes", "Leave to cool for 5 minutes before serving"]
         const body2 = {
-            "idtoken":98981029412803981029480912840,
             "date":"23 April 2019",
             "creator":"baker213",
             "title":"Test Recipe",
@@ -105,6 +104,7 @@ describe('Test new recipe service', () => {
         await request(app)
         .post("/new")
         .type('form')
+        .set({'Authorization':123918203})
         .send(body2)
         .expect("Recipe successfully added");
         spy.mockRestore();
@@ -115,7 +115,6 @@ describe('Test new recipe service', () => {
         const ingredients = [{"quantity":"2", "units":"No Units", "ingredient":"Eggs"}, {"quantity":"200", "units":"g", "ingredient":"flour"}];
         const directions = ["Preheat an oven to 200C", "Combine the eggs and the flour in a large bowl", "Place in a baking tray and cook for 20 minutes", "Leave to cool for 5 minutes before serving"]
         const body2 = {
-            "idtoken":12,
             "date":"23 April 2019",
             "creator":"baker213",
             "title":"Test Recipe",
@@ -127,6 +126,7 @@ describe('Test new recipe service', () => {
         await request(app)
         .post("/new")
         .type('form')
+        .set({'Authorization':123918203})
         .send(body2)
         } catch(error) {
             expect(error.message).toBe('Unauthorized');
@@ -138,7 +138,6 @@ describe('Test new recipe service', () => {
         const ingredients = [{"quantity":"2", "units":"No Units", "ingredient":"Eggs"}, {"quantity":"200", "units":"g", "ingredient":"flour"}];
         const directions = ["Preheat an oven to 200C", "Combine the eggs and the flour in a large bowl", "Place in a baking tray and cook for 20 minutes", "Leave to cool for 5 minutes before serving"]
         const body2 = {
-            "idtoken":12,
             "date":"23 April 2019",
             "creator":"baker213",
             "title":"",
@@ -152,6 +151,7 @@ describe('Test new recipe service', () => {
         await request(app)
         .post("/new")
         .type('form')
+        .set({'Authorization':123918203})
         .send(body2)
         spy.mockRestore();
         } catch(error) {
@@ -167,7 +167,6 @@ describe('Test new recipe service', () => {
         const ingredients = [{"quantity":"2", "units":"No Units", "ingredient":"Eggs"}, {"quantity":"200", "units":"g", "ingredient":"flour"}];
         const directions = ["Preheat an oven to 200C", "Combine the eggs and the flour in a large bowl", "Place in a baking tray and cook for 20 minutes", "Leave to cool for 5 minutes before serving"]
         const body2 = {
-            "idtoken":12,
             "date":"23 April 2019",
             "creator":"baker213",
             "description":"A basic recipe for something",
@@ -178,6 +177,7 @@ describe('Test new recipe service', () => {
         await request(app)
         .post("/new")
         .type('form')
+        .set({'Authorization':123918203})
         .send(body2)
         } catch(error) {
             expect(error.message).toBe('Bad Request');
@@ -190,14 +190,24 @@ describe('Test uploadImage service', () => {
     test('Uploading image succeeds with valid ID token', async() => {
         const spy = jest.spyOn(tokenSignIn, 'tokenSignIn');
         spy.mockReturnValue(true);
-        const body2 = {
-            "image":image
-        }
         await request(app)
         .post('/uploadImage')
         .type('form')
-        .send(body2)
-        .expect('Image uploaded!');
+        .attach('image',image)
+        .expect(201);
+        spy.mockRestore();
+    });
+
+    test('Uploading image fails with invalid ID token', async() => {
+        try{
+            await request(app)
+            .post('/uploadImage')
+            .type('form')
+            .attach('image',image)
+            .expect('Image uploaded!');
+        } catch (error) {
+            expect(error.message).toBe('Unauthorized');
+        }
     });
 });
 
@@ -206,7 +216,6 @@ describe('Test addComment service', () => {
         const spy = jest.spyOn(tokenSignIn, 'tokenSignIn');
         spy.mockReturnValue(true);
         const toSend = {
-            "idtoken":94593405345,
             "date":"24 April 2019",
             "author":"baker213",
             "text":"Great recipe! Thanks for sharing",
@@ -215,8 +224,9 @@ describe('Test addComment service', () => {
         await request(app)
         .post('/addComment')
         .type('form')
+        .set({'Authorization':123918203})
         .send(toSend)
-        .expect("Comment successfully added");
+        .expect(201);
         spy.mockRestore();
     });
 
@@ -225,7 +235,6 @@ describe('Test addComment service', () => {
         spy.mockReturnValue(true);
         try {
             const toSend = {
-                "idtoken":94593405345,
                 "date":"24 April 2019",
                 "author":"baker213",
                 "text":"Great recipe! Thanks for sharing",
@@ -234,6 +243,7 @@ describe('Test addComment service', () => {
             await request(app)
             .post('/addComment')
             .type('form')
+            .set({'Authorization':123918203})
             .send(toSend)
         } catch(error) {
             expect(error.message).toBe('Bad Request');
@@ -244,7 +254,6 @@ describe('Test addComment service', () => {
     test("Add new comment fails if user is not signed in / idtoken is invalid", async() => {
         try {
             const toSend = {
-                "idtoken":12312,
                 "date":"24 April 2019",
                 "author":"baker213",
                 "text":"Great recipe! Thanks for sharing",
@@ -253,6 +262,7 @@ describe('Test addComment service', () => {
             await request(app)
             .post('/addComment')
             .type('form')
+            .set({'Authorization':123918203})
             .send(toSend)
         } catch(error) {
             expect(error.message).toBe('Unauthorized');
@@ -265,7 +275,6 @@ describe('Test createProfile service', () => {
         const spy = jest.spyOn(tokenSignIn, 'tokenSignIn');
         spy.mockReturnValue(true);
         const toSend = {
-            "idtoken":9128309128039812093,
             "userID":"827146914025046",
             "username":"newUser3",
             "date":"24 April 2019",
@@ -274,8 +283,9 @@ describe('Test createProfile service', () => {
         await request(app)
         .post('/createProfile')
         .type('form')
+        .set({'Authorization':123918203})
         .send(toSend)
-        .expect("New profile created");
+        .expect(201);
         spy.mockRestore();
     });
 
@@ -284,7 +294,6 @@ describe('Test createProfile service', () => {
         spy.mockReturnValue(true);
         try{
             const toSend = {
-                "idtoken":9128309128039812093,
                 "userID":"01285239523234",
                 "date":"27 April 2019",
                 "pictureURL":"http://clipart-library.com/images/BTaKbqGEc.png"
@@ -292,6 +301,7 @@ describe('Test createProfile service', () => {
             await request(app)
             .post('/createProfile')
             .type('form')
+            .set({'Authorization':123918203})
             .send(toSend);
         } catch(error) {
             expect(error.message).toBe('Bad Request');
@@ -302,7 +312,6 @@ describe('Test createProfile service', () => {
     test("Create new profile fails with invalid ID token", async() => {
         try{
             const toSend = {
-                "idtoken":921343,
                 "userID":"01285239523234",
                 "username":"newUser3",
                 "date":"27 April 2019",
@@ -311,6 +320,7 @@ describe('Test createProfile service', () => {
             await request(app)
             .post('/createProfile')
             .type('form')
+            .set({'Authorization':123918203})
             .send(toSend);
         } catch(error) {
             expect(error.message).toBe('Unauthorized');
@@ -322,7 +332,6 @@ describe('Test createProfile service', () => {
         spy.mockReturnValue(true);
         try{
             const toSend = {
-                "idtoken":921823742239857209485204343,
                 "userID":"01285239523234",
                 "username":"user163",
                 "date":"27 April 2019",
@@ -331,6 +340,7 @@ describe('Test createProfile service', () => {
             await request(app)
             .post('/createProfile')
             .type('form')
+            .set({'Authorization':123918203})
             .send(toSend);
         } catch(error) {
             expect(error.message).toBe('Conflict');
@@ -343,7 +353,6 @@ describe('Test createProfile service', () => {
         spy.mockReturnValue(true);
         try{
             const toSend = {
-                "idtoken":921823742239857209485204343,
                 "userID":"115240131475881817498",
                 "username":"newUser125",
                 "date":"27 April 2019",
@@ -352,6 +361,7 @@ describe('Test createProfile service', () => {
             await request(app)
             .post('/createProfile')
             .type('form')
+            .set({'Authorization':123918203})
             .send(toSend);
         } catch(error) {
             expect(error.message).toBe('Conflict');
