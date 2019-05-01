@@ -40,7 +40,7 @@
 }
 
 #unitSelect {
-    margin-left: 20px;
+    margin-left: 230px;
 }
 
 .ui.reply.form {
@@ -50,4 +50,18 @@
 .ui.modal.error {
     max-height: 80%;
     height: 10%;
+}
+
+.g-signin2 > div{
+    margin-right: 0px;
+    float:right;
+  }
+
+#search {
+    max-height: 50%;
+    position: absolute;
+    min-width: 200px;
+    min-height: 30px;
+    width: 200px;
+    bottom: 0px;
 }

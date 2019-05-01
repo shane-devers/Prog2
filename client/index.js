@@ -1,35 +1,6 @@
-/* window.fbAsyncInit = function() {
-    FB.init({
-        appId            : 400507017396771,
-        autoLogAppEvents : true,
-        xfbml            : true,
-        version          : 'v3.2'
-    });
-    checkLoginState();
-}; */
-
 let username = '';
 let profile = '';
 let id_token = '';
-/* 
-function checkLoginState() {
-    FB.getLoginStatus(async function(response) {
-        if (response.status === 'connected') {
-             getName();
-            let response2 = await fetch('/userIDName/'+response.authResponse.userID);
-            username = response.authResponse.userID;
-            let body = await response2.text(); //{"835566406777374":"user163"}
-            console.log(body);
-            if (body == 'false'){
-                document.getElementById('modals').innerHTML += '<div class="ui modal" id="profileModal"><div class="header">Create Profile</div><div class="content"><form class="ui form" method="POST" action="/createProfile" id="createProfile"><div class="field"><label>Username:</label><input type="text placeholder="Username" name="username" id="username"></div><div class="field"><label>Profile Picture</label><input type="file" name="profilePicture" id="profilePicture" accept="image/*"></div><div class="actions"><button class="ui green ok button" type="submit"><i class="checkmark icon"></i>OK</button><button class="ui red basic cancel button" type="button"><i class="remove icon"></i>Cancel</button></div></form></div>'
-                $(document).ready(function(){$('#profileModal').modal('show');})
-                $(document).ready(function(){document.getElementById('createProfile').addEventListener('submit', function(event){event.preventDefault(); createProfile(response.authResponse.userID);})});
-            } else {
-                username = body;
-            } 
-        }
-    });
-} */
 
 async function onSignIn(googleUser) {
     id_token = googleUser.getAuthResponse().id_token;
@@ -56,17 +27,10 @@ async function onSignIn(googleUser) {
         $(document).ready(function(){document.getElementById('createProfile').addEventListener('submit', function(event){event.preventDefault(); createProfile(username);});});
     } else {
         username = body;
+        //document.getElementById('Facebook').innerHTML += 'Signed in as '+username;
+        document.getElementById('SignInName').innerHTML = document.getElementById('SignInName').innerHTML.replace('Not Signed In', 'Signed in as '+username);
     }
 }
-  
-/* function getName() {
-    let name = '';
-    FB.api('/me', function(response) {
-        //document.getElementById('Facebook').innerHTML = response.name;
-        return response.name;
-    });
-    return name;
-} */
 
 document.addEventListener('DOMContentLoaded', async function(event){
     getResults(event, 'search');
@@ -158,16 +122,8 @@ async function addComment(event, i) {
     console.log(i);
     event.preventDefault();
     let date = getDate();
-    /*                 if (document.getElementById('Facebook').innerHTML.indexOf('fb-login') != -1){
-        throw new Error('Please log in to add a new recipe!');
-    } */
     let creator = document.getElementById('Facebook').innerHTML;
     let text = document.getElementById('commentBox'+i).value;
-    /*     let newComment = {
-        "author": creator,
-        "date": date,
-        "text": document.getElementById('commentBox'+i).value
-    } */
     let response = await fetch('/addComment', {
         method: 'POST',
         headers: {
@@ -254,24 +210,10 @@ function convertUnits(input, output, value, unit){
 $(document).ready(function(){document.getElementById('addRecipe').addEventListener('submit', async function(event){
     event.preventDefault();
     submitValues();
-/*     try {
-        FB.getLoginStatus(function(response){
-            if (response.status === 'connected') {
-                submitValues();
-            } else {
-                throw new Error('Please log in to add a new recipe!');
-            }
-        });
-    } catch (error) {
-        alert(error);
-    } */
 });});
 
 async function submitValues() {
     let date = getDate();
-    /*                 if (document.getElementById('Facebook').innerHTML.indexOf('fb-login') != -1){
-        throw new Error('Please log in to add a new recipe!');
-    } */
     let creator = username;
     let title = document.getElementById('RecipeTitle').value;
     let description = document.getElementById('RecipeDescription').value;
@@ -304,7 +246,6 @@ async function submitValues() {
     let respBody = await response.text();
     if (!response.ok) {
         createErrorModal('Problem adding recipe', respBody);
-        //throw new Error('problem adding recipe ' + respBody);
     }
     getResults(event, 'search');
 }
@@ -329,15 +270,14 @@ async function createProfile(userID) {
     });
     let respBody = await response.text();
     if (!response.ok) {
-        createErrorModal('Problem adding recipe', respBody);
+        createErrorModal('Problem creating profile', respBody);
     } else {
         username = document.getElementById('username').value;
+        document.getElementById('SignInName').innerHTML = document.getElementById('SignInName').innerHTML.replace('Not Signed In', 'Signed in as '+username);
     }
 }
 
 $(document).ready(function(){document.getElementById('home').addEventListener('click', function(event) {getResults(event,'search'); document.getElementById('title').innerHTML = 'Newest Recipes';});});
-
-//$(document).ready(function(){document.getElementById('dropdown').addEventListener('click', function(event) {$('.ui.dropdown').dropdown();})});
 
 $(document).ready(function(){document.getElementById('AddIngredient').addEventListener('click', function(){let i = document.getElementsByClassName('ui dropdown label').length - 1; 
     let contents = [];
@@ -353,4 +293,4 @@ $(document).ready(function(){document.getElementById('AddIngredient').addEventLi
         document.getElementById('Quantity'+j).value = contents[j].quantity;
         document.getElementById('Ingredient'+j).value = contents[j].ingredient;
     }
-});}); //document.getElementById('dropdown'+i).addEventListener('click', function() {$('.ui.dropdown').dropdown();
+});});
