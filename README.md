@@ -1,5 +1,4 @@
-# Prog2
-Programming Summative Assignment 2 - website\
+# Programming Summative Assignment 2 - website
 Link to OpenShift Deployment: https://recipeshare-recipeshare.7e14.starter-us-west-2.openshiftapps.com/
 
 ## Using the site
@@ -279,3 +278,21 @@ None
 |---|---|
 |200|"User authenticated"|
 |401|"Invalid ID token"|
+
+## Image and Recipe Sources
+### Images
+All images are from pexels.com, which hosts royalty free images, except the lasagna photograph which I took myself
+
+### Recipes
+|Recipe|Source|Author|
+|---|---|---|
+|Sugar-Free Chocolate Cake|https://opensourcecook.com/2009/08/08/793/sugar-free-chocolate-cake |jackie|
+|Cheesecake|My head|Myself|
+|Lasagna|My head|Myself|
+|Strawberry Cheesecake|https://opensourcecook.com/2008/08/19/39/chocolate-strawberry-cheesecake |jackie|
+|Chicken and Rice Soup |https://opensourcecook.com/2012/02/07/1075/easy-chicken-and-rice-soup|jackie|
+|Sliders|https://opensourcecook.com/2009/02/25/606/mini-cheeseburgers-aka-sliders |jackie|
+|White Chocolate Chip Cookies|https://opensourcecook.com/2010/07/19/876/white-chocolate-chip-cookies |jackie|
+|Roast Chicken|https://www.bbcgoodfood.com/recipes/3422/roast-chicken- |Good Food|
+|Spaghetti Bolognese|https://www.bbc.com/food/recipes/easy_spaghetti_bolognese_93639 |Chris Bell|
+|BBQ Ribs|http://allrecipes.co.uk/recipe/7523/easy-bbq-ribs.aspx |Lloyd Rushing|
