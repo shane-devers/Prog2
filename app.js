@@ -1,3 +1,5 @@
+/*global require process module*/
+
 var express = require('express');
 var app = express();
 var recipes = require('./recipes.json');
@@ -101,6 +103,7 @@ app.post('/new', async function(req, resp){
                     resp.send('Ingredients is not a valid JSON string');
                 }
                 let directions = req.body.directions.split('\n');
+                /* eslint-disable quotes */
                 let newRecipe = {
                     "date" : req.body.date,
                     "creator" : req.body.creator,
@@ -111,6 +114,7 @@ app.post('/new', async function(req, resp){
                     "thumbnail" : req.body.thumbnail,
                     "comments" : []
                 };
+                /* eslint-enable quotes */
                 recipes.push(newRecipe);
                 profiles[req.body.creator].recipes += 1;
                 fs.writeFile(directory + 'recipes.json', JSON.stringify(recipes));
@@ -150,11 +154,13 @@ app.post('/addComment', async function(req, resp){
     if (await tokenSignIn.tokenSignIn(req)){
         if (req.body.hasOwnProperty('author') && req.body.hasOwnProperty('date') && req.body.hasOwnProperty('text')){
             let i = req.body.recipe;
+            /* eslint-disable quotes */
             let newComment = {
                 "author": req.body.author,
                 "date": req.body.date,
                 "text": req.body.text
             };
+            /* eslint-enable quotes */
             recipes[i].comments.push(newComment);
             fs.writeFile(directory+'recipes.json', JSON.stringify(recipes));
             resp.status(201);
@@ -177,11 +183,13 @@ app.post('/createProfile', async function(req, resp){
                     let userID = req.body.userID.toString();
                     let username = req.body.username;
                     userIDName[userID] = username;
+                    /* eslint-disable quotes */
                     let newProfile = {
                         "recipes": 0,
                         "creationDate": req.body.date,
                         "profilePicture": req.body.pictureURL
                     };
+                    /* eslint-enable quotes */
                     profiles[username] = newProfile;
                     fs.writeFile(directory+'userIDName.json', JSON.stringify(userIDName));
                     fs.writeFile(directory+'profiles.json', JSON.stringify(profiles));

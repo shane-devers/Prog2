@@ -88,8 +88,8 @@ describe('Test profiles service', () => {
 
 describe('Test new recipe service', () => {
     test("Add new recipe", async() => {
-        const ingredients = [{"quantity":"2", "units":"No Units", "ingredient":"Eggs"}, {"quantity":"200", "units":"g", "ingredient":"flour"}];
-        const directions = ["Preheat an oven to 200C", "Combine the eggs and the flour in a large bowl", "Place in a baking tray and cook for 20 minutes", "Leave to cool for 5 minutes before serving"]
+        const ingredients = [{"quantity":"2", "unit":"No Units", "ingredient":"Eggs"}, {"quantity":"200", "unit":"g", "ingredient":"flour"}];
+        const directions = "Preheat an oven to 200C\nCombine the eggs and the flour in a large bowl\nPlace in a baking tray and cook for 20 minutes\nLeave to cool for 5 minutes before serving"
         const body2 = {
             "date":"23 April 2019",
             "creator":"baker213",
@@ -112,8 +112,8 @@ describe('Test new recipe service', () => {
 
     test("Add new recipe fails with invalid ID token", async() => {
         try {
-        const ingredients = [{"quantity":"2", "units":"No Units", "ingredient":"Eggs"}, {"quantity":"200", "units":"g", "ingredient":"flour"}];
-        const directions = ["Preheat an oven to 200C", "Combine the eggs and the flour in a large bowl", "Place in a baking tray and cook for 20 minutes", "Leave to cool for 5 minutes before serving"]
+        const ingredients = [{"quantity":"2", "unit":"No Units", "ingredient":"Eggs"}, {"quantity":"200", "unit":"g", "ingredient":"flour"}];
+        const directions = "Preheat an oven to 200C\nCombine the eggs and the flour in a large bowl\nPlace in a baking tray and cook for 20 minutes\nLeave to cool for 5 minutes before serving"
         const body2 = {
             "date":"23 April 2019",
             "creator":"baker213",
@@ -135,8 +135,8 @@ describe('Test new recipe service', () => {
 
     test("Add new recipe fails if at least one property is blank", async() => {
         try {
-        const ingredients = [{"quantity":"2", "units":"No Units", "ingredient":"Eggs"}, {"quantity":"200", "units":"g", "ingredient":"flour"}];
-        const directions = ["Preheat an oven to 200C", "Combine the eggs and the flour in a large bowl", "Place in a baking tray and cook for 20 minutes", "Leave to cool for 5 minutes before serving"]
+        const ingredients = [{"quantity":"2", "unit":"No Units", "ingredient":"Eggs"}, {"quantity":"200", "unit":"g", "ingredient":"flour"}];
+        const directions = "Preheat an oven to 200C\nCombine the eggs and the flour in a large bowl\nPlace in a baking tray and cook for 20 minutes\nLeave to cool for 5 minutes before serving"
         const body2 = {
             "date":"23 April 2019",
             "creator":"baker213",
@@ -164,8 +164,8 @@ describe('Test new recipe service', () => {
         const spy = jest.spyOn(tokenSignIn, 'tokenSignIn');
         spy.mockReturnValue(true);
         try {
-        const ingredients = [{"quantity":"2", "units":"No Units", "ingredient":"Eggs"}, {"quantity":"200", "units":"g", "ingredient":"flour"}];
-        const directions = ["Preheat an oven to 200C", "Combine the eggs and the flour in a large bowl", "Place in a baking tray and cook for 20 minutes", "Leave to cool for 5 minutes before serving"]
+        const ingredients = [{"quantity":"2", "unit":"No Units", "ingredient":"Eggs"}, {"quantity":"200", "unit":"g", "ingredient":"flour"}];
+        const directions = "Preheat an oven to 200C\nCombine the eggs and the flour in a large bowl\nPlace in a baking tray and cook for 20 minutes\nLeave to cool for 5 minutes before serving"
         const body2 = {
             "date":"23 April 2019",
             "creator":"baker213",
@@ -193,6 +193,7 @@ describe('Test uploadImage service', () => {
         await request(app)
         .post('/uploadImage')
         .type('form')
+        .set({'Authorization':123918203})
         .attach('image',image)
         .expect(201);
         spy.mockRestore();
@@ -203,6 +204,7 @@ describe('Test uploadImage service', () => {
             await request(app)
             .post('/uploadImage')
             .type('form')
+            .set({'Authorization':123918203})
             .attach('image',image)
             .expect('Image uploaded!');
         } catch (error) {
