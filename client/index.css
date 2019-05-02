@@ -39,13 +39,13 @@
     margin-left: 20px;
 }
 
-#unitSelect {
+/* #unitSelect {
 /*     margin-left: 230px;
     max-height: 50%;
     position: absolute;
     bottom: 20px;
-    left: 400px; */
-}
+    left: 400px;
+} */
 
 .ui.reply.form {
     margin-left: 20px;
@@ -60,12 +60,13 @@
     margin-right: 0px;
     float:right;
   }
-
+/* 
 #search {
+    max-width:150px;
 /*     max-height: 50%;
     position: absolute;
     min-width: 200px;
     min-height: 30px;
     width: 200px;
-    bottom: 0px; */
-}
+    bottom: 0px; 
+} */

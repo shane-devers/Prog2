@@ -150,23 +150,23 @@ function convertUnits(input, output, value, unit){
         case 'cups':
             amount = value * 236.588;
             if (amount >= 1000) {
-                return (amount/1000).toFixed(2) + ' l';
+                return (amount/1000).toFixed(1) + ' l';
             } else {
                 return Math.round(amount) + ' ml';
             }
         case 'fl oz':
             amount = value * 28.413;
             if (amount >= 1000) {
-                return (amount/1000).toFixed(2) + ' l';
+                return (amount/1000).toFixed(1) + ' l';
             } else {
                 return Math.round(amount) + ' ml';
             }
         case 'l':
             amount = value * 35.195;
-            return amount.toFixed(2) + ' fl oz';
+            return amount.toFixed(1) + ' fl oz';
         case 'ml':
             amount = value / 28.413;
-            return amount.toFixed(2) + ' fl oz';
+            return amount.toFixed(1) + ' fl oz';
         case 'oz':
             amount = value * 28.35;
             return Math.round(amount) + ' g';
@@ -180,13 +180,13 @@ function convertUnits(input, output, value, unit){
         case 'g':
             amount = value / 28.35;
             if (amount >= 16) {
-                return (amount/16).toFixed(2) + ' lb';
+                return (amount/16).toFixed(1) + ' lb';
             } else {
-                return amount.toFixed(2) + ' oz';
+                return amount.toFixed(1) + ' oz';
             }
         case 'kg':
             amount = value * 2.205;
-            return amount.toFixed(2) + ' lb';
+            return amount.toFixed(1) + ' lb';
         case 'No Units':
             return value;
         default:
@@ -221,7 +221,6 @@ async function submitValues() {
     fD.append('image', thumbnail);
     xhr.open('POST', '/uploadImage');
     xhr.setRequestHeader('Authorization', id_token);
-    console.log(fD);
     xhr.send(fD);
     let response = await fetch('/new', {
         method: 'POST',
