@@ -1,5 +1,5 @@
 # Prog2
-Programming Summative Assignment 2 - website
+Programming Summative Assignment 2 - website\
 Link to OpenShift Deployment: https://recipeshare-recipeshare.7e14.starter-us-west-2.openshiftapps.com/
 
 ## Using the site
