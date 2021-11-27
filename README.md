@@ -1,5 +1,5 @@
 # Programming Summative Assignment 2 - website
-Link to OpenShift Deployment: https://recipeshare-recipeshare.7e14.starter-us-west-2.openshiftapps.com/
+Link to Heroku Deployment: https://recipeshare-sd.herokuapp.com/
 
 ## Using the site
 The interface of the website is rather basic. At the top there is a menu bar with the website's name and the Google log in button. Below this there is a space for the title of this particular page. Next there is the add new recipe button, which allows the user to upload a new recipe to the website in a modal. Beside this there is a search button, which allows the user to search for all/part of a recipe title. Next to this there is the unit selector, where the user can select whether they want ingredients to be listed using metric or imperial units. Finally, below this, there are the cards listing the recipes on the site. 
