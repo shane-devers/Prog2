@@ -110,7 +110,7 @@ function createErrorModal(title, message) {
 async function addComment(event, i) {
     event.preventDefault();
     let date = getDate();
-    let creator = document.getElementById('Facebook').innerHTML;
+    let creator = username;
     let text = document.getElementById('commentBox'+i).value;
     let response = await fetch('/addComment', {
         method: 'POST',
